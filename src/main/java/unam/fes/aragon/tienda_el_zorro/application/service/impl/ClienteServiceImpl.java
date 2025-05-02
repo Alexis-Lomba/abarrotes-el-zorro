@@ -7,10 +7,13 @@ import unam.fes.aragon.tienda_el_zorro.application.service.ClienteService;
 import unam.fes.aragon.tienda_el_zorro.domain.constants.BussinessConstants;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Cliente;
+import unam.fes.aragon.tienda_el_zorro.domain.error.DinError;
 import unam.fes.aragon.tienda_el_zorro.domain.error.ErrorNegocio;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.ClientMapper;
+import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.ValidateEmail;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.ClienteRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -20,6 +23,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     private ClienteRepository clienteRepository;
     private ClientMapper clienteMapper;
+    private ValidateEmail validateEmail;
 
     @Override
     public List<ClienteDTO> findAll() {
@@ -31,13 +35,10 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public ClienteDTO createCliente(ClienteDTO clienteDTO) throws Exception {
         log .info("ServiceImpl : {}", clienteDTO);
-        Cliente cliente = clienteMapper.toEntity(clienteDTO);
 
-        if (clienteRepository.findByEmail(cliente.getEmail()) != null) {
-            throw new ErrorNegocio("YA existe un cliente con ese correo");
-        }
+        validateEmail.validate(clienteDTO.getCorreo());
 
-        clienteRepository.save(cliente);
+        clienteRepository.save(clienteMapper.toEntity(clienteDTO));
         clienteDTO.setStatus(BussinessConstants.CREADO_CORRECTAMENTE);
 
         return clienteDTO;

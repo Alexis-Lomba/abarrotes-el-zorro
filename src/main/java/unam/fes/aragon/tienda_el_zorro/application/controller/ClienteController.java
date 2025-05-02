@@ -2,14 +2,18 @@ package unam.fes.aragon.tienda_el_zorro.application.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import unam.fes.aragon.tienda_el_zorro.application.service.ClienteService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
 
+import java.util.List;
+
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("client-service")
 public class ClienteController {
 
@@ -19,9 +23,9 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
-    @PostMapping("/clients")
-    public void getClients(){
-
+    @GetMapping("/clients")
+    public List<ClienteDTO> getClients(){
+        return clienteService.findAll();
     }
 
     @PostMapping("/create")
