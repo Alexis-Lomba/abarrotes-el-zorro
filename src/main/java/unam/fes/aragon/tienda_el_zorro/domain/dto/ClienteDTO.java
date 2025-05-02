@@ -7,13 +7,16 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ClienteDTO {
     private Long id;
     private String nombre;
+    private String apellido;
     private String correo;
     private List<Long> facturasIds;
+    private String status;
 } 

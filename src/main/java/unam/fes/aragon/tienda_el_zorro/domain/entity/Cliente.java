@@ -23,7 +23,8 @@ public class Cliente implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
-    private String correo;
+    private String apellido;
+    private String email;
 
     @OneToMany(mappedBy = "cliente")
     private List<Factura> facturas;

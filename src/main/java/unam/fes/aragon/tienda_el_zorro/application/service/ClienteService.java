@@ -7,5 +7,5 @@ import java.util.List;
 public interface ClienteService {
     List<ClienteDTO> findAll();
     
-    ClienteDTO createCliente(ClienteDTO clienteDTO);
+    ClienteDTO createCliente(ClienteDTO clienteDTO) throws Exception;
 } 
