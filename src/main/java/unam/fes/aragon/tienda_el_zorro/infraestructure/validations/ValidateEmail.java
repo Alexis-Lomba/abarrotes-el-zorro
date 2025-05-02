@@ -1,4 +1,4 @@
-package unam.fes.aragon.tienda_el_zorro.infraestructure.mapper;
+package unam.fes.aragon.tienda_el_zorro.infraestructure.validations;
 
 import org.springframework.stereotype.Service;
 import unam.fes.aragon.tienda_el_zorro.domain.constants.BussinessConstants;

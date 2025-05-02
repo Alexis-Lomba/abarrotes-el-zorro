@@ -6,14 +6,10 @@ import org.springframework.stereotype.Service;
 import unam.fes.aragon.tienda_el_zorro.application.service.ClienteService;
 import unam.fes.aragon.tienda_el_zorro.domain.constants.BussinessConstants;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
-import unam.fes.aragon.tienda_el_zorro.domain.entity.Cliente;
-import unam.fes.aragon.tienda_el_zorro.domain.error.DinError;
-import unam.fes.aragon.tienda_el_zorro.domain.error.ErrorNegocio;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.ClientMapper;
-import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.ValidateEmail;
+import unam.fes.aragon.tienda_el_zorro.infraestructure.validations.ValidateEmail;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.ClienteRepository;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
