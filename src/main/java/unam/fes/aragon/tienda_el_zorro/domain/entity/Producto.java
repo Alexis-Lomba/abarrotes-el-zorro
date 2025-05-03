@@ -1,5 +1,7 @@
 package unam.fes.aragon.tienda_el_zorro.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,14 +36,25 @@ public class Producto implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "proveedor_id")
+    @JsonBackReference
     private Proveedor proveedor;
 
     @OneToMany(mappedBy = "producto")
+    @JsonBackReference
     private List<DetalleFactura> detalles;
 
     @OneToOne(mappedBy = "producto", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Inventario inventario;
 
-// Getters y Setters
-
+    @Override
+    public String toString() {
+        return "Producto{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", descripcion='" + descripcion + '\'' +
+                ", precio=" + precio +
+                ", imagenUrl='" + imagenUrl + '\'' +
+                '}'; // <--- ¡No incluir proveedor, inventario ni detalles!
+    }
 }

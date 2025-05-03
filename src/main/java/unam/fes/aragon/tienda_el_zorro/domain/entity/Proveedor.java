@@ -1,5 +1,7 @@
 package unam.fes.aragon.tienda_el_zorro.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,8 +28,15 @@ public class Proveedor implements Serializable {
     private String correo;
 
     @OneToMany(mappedBy = "proveedor")
+    @JsonManagedReference
     private List<Producto> productos;
 
-// Getters y Setters
-
+    @Override
+    public String toString() {
+        return "Proveedor{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", correo='" + correo + '\'' +
+                '}'; // <--- No incluir productos
+    }
 }

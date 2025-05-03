@@ -7,12 +7,14 @@ import unam.fes.aragon.tienda_el_zorro.domain.dto.ProveedorDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Proveedor;
 
 @Mapper(componentModel = "spring")
-public interface ProveedorMapper {
-    ProveedorMapper INSTANCE = Mappers.getMapper(ProveedorMapper.class);
-
+public interface IProveedorMapper {
+    IProveedorMapper INSTANCE = Mappers.getMapper(IProveedorMapper.class);
+/*
     @Mapping(target = "productosIds", expression = "java(proveedor.getProductos().stream().map(producto -> producto.getId()).toList())")
     ProveedorDTO toDto(Proveedor proveedor);
 
     @Mapping(target = "productos", ignore = true)
     Proveedor toEntity(ProveedorDTO proveedorDTO);
+
+ */
 } 

@@ -18,6 +18,4 @@ public class ProveedorDTO {
     private String nombre;
     private String correo;
     private String status;
-    @JsonIgnore
-    private List<Long> productosIds;
 } 

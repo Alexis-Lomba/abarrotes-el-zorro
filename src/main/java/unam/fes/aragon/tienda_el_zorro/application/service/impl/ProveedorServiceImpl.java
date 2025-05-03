@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import unam.fes.aragon.tienda_el_zorro.application.service.ProveedorService;
 import unam.fes.aragon.tienda_el_zorro.domain.constants.BussinessConstants;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ProveedorDTO;
-import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.ProveedorMapper;
+import unam.fes.aragon.tienda_el_zorro.domain.entity.Proveedor;
+import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.IProveedorMapper;
+import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ProveedorMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.ProveedorRepository;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.validations.ProveedorValidator;
 
@@ -31,9 +33,10 @@ public class ProveedorServiceImpl implements ProveedorService {
     @Override
     public ProveedorDTO createProveedor(ProveedorDTO proveedorDTO) {
         log.info("Creating new proveedor");
-        proveedorValidator.validate(proveedorDTO.getNombre());
+        Proveedor proveedor = proveedorMapper.toEntity(proveedorDTO);
 
-        proveedorRepository.save(proveedorMapper.toEntity(proveedorDTO));
+        proveedorValidator.validate(proveedor);
+        proveedorRepository.save(proveedor);
 
         proveedorDTO.setStatus(BussinessConstants.CREADO_CORRECTAMENTE);
         return proveedorDTO;
