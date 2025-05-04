@@ -11,5 +11,5 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     @Query(value = "select cli.email " +
             "from cliente cli " +
             "where cli.email = ?1", nativeQuery = true)
-    String findByEmail( String email);
+    Cliente findByEmail( String email);
 } 

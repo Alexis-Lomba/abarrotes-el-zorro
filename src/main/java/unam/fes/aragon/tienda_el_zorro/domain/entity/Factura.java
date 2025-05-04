@@ -30,6 +30,10 @@ public class Factura implements Serializable {
 
     private LocalDateTime fecha;
 
+    private Float total;
+
+    private Boolean activa;
+
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;

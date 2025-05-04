@@ -14,5 +14,14 @@ public class DetalleFacturaDTO {
     private Integer cantidad;
     private Double precioUnitario;
     private Long facturaId;
-    private Long productoId;
-} 
+    private ProductoDTO producto;
+
+    @Override
+    public String toString() {
+        return "DetalleFacturaDTO{" +
+                ", producto=" + producto +
+                ", cantidad=" + cantidad +
+                ", precioUnitario=" + precioUnitario +
+                '}';
+    }
+}
