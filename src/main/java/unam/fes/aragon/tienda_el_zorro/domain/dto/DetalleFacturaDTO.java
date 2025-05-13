@@ -4,24 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DetalleFacturaDTO {
     private Long id;
     private Integer cantidad;
     private Double precioUnitario;
-    private Long facturaId;
-    private ProductoDTO productoDTO;
 
-    @Override
-    public String toString() {
-        return "DetalleFacturaDTO{" +
-                "id" + id +
-                ", cantidad=" + cantidad +
-                ", precioUnitario=" + precioUnitario +
-                '}';
-    }
+    // Adding JsonIgnoreProperties to break potential circular references
+    @JsonIgnoreProperties("productos")
+    private Long facturaId;
+
+    private Long productoId;
 }

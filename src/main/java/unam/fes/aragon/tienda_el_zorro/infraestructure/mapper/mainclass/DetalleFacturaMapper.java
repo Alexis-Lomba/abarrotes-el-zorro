@@ -1,6 +1,7 @@
 package unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass;
 
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.DetalleFacturaDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.DetalleFactura;
@@ -8,23 +9,32 @@ import unam.fes.aragon.tienda_el_zorro.domain.entity.Producto;
 
 @AllArgsConstructor
 @Service
+@Primary  // Mark as primary to override any existing implementations
 public class DetalleFacturaMapper {
 
-    private final ProductoMapper productoMapper;
+    // No dependency on ProductoMapper to avoid potential circular references
+
     public DetalleFacturaDTO toDto(DetalleFactura detalle) {
         if (detalle == null) return null;
 
-        return DetalleFacturaDTO.builder()
-                .id(detalle.getId())
-                .cantidad(detalle.getCantidad())
-                .precioUnitario(detalle.getPrecioUnitario() != null
-                        ? detalle.getPrecioUnitario().doubleValue()
-                        : null)
-                .facturaId(detalle.getFactura() != null
-                        ? detalle.getFactura().getId()
-                        : null)
-                .productoDTO(productoMapper.toDto(detalle.getProducto())) // Mapear solo el ID del producto
-                .build();
+        DetalleFacturaDTO dto = new DetalleFacturaDTO();
+        dto.setId(detalle.getId());
+        dto.setCantidad(detalle.getCantidad());
+
+        if (detalle.getPrecioUnitario() != null) {
+            dto.setPrecioUnitario(detalle.getPrecioUnitario().doubleValue());
+        }
+
+        // Only set the IDs, not the full objects
+        if (detalle.getFactura() != null) {
+            dto.setFacturaId(detalle.getFactura().getId());
+        }
+
+        if (detalle.getProducto() != null) {
+            dto.setProductoId(detalle.getProducto().getId());
+        }
+
+        return dto;
     }
 
     public DetalleFactura toEntity(DetalleFacturaDTO dto) {
@@ -33,17 +43,20 @@ public class DetalleFacturaMapper {
         DetalleFactura detalle = new DetalleFactura();
         detalle.setId(dto.getId());
         detalle.setCantidad(dto.getCantidad());
-        detalle.setPrecioUnitario(dto.getPrecioUnitario() != null
-                ? dto.getPrecioUnitario().floatValue()
-                : null);
 
-        if (dto.getProductoDTO() != null) {
+        if (dto.getPrecioUnitario() != null) {
+            detalle.setPrecioUnitario(dto.getPrecioUnitario().floatValue());
+        }
+
+        // Only set the product ID, not the full Factura object
+        if (dto.getProductoId() != null) {
             Producto producto = new Producto();
-            producto.setId(dto.getProductoDTO().getId());
+            producto.setId(dto.getProductoId());
             detalle.setProducto(producto);
         }
+
+        // Do NOT set the Factura here - it will be set by the FacturaMapper
 
         return detalle;
     }
 }
-

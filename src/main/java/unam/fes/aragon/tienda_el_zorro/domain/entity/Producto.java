@@ -11,10 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -36,25 +33,13 @@ public class Producto implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "proveedor_id")
-    @JsonBackReference
     private Proveedor proveedor;
 
     @OneToMany(mappedBy = "producto")
-    @JsonBackReference
+    @ToString.Exclude
     private List<DetalleFactura> detalles;
 
     @OneToOne(mappedBy = "producto", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private Inventario inventario;
 
-    @Override
-    public String toString() {
-        return "Producto{" +
-                "id=" + id +
-                ", nombre='" + nombre + '\'' +
-                ", descripcion='" + descripcion + '\'' +
-                ", precio=" + precio +
-                ", imagenUrl='" + imagenUrl + '\'' +
-                '}'; // <--- ¡No incluir proveedor, inventario ni detalles!
-    }
 }

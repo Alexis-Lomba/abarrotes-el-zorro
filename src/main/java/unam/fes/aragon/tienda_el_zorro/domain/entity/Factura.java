@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Data
+ @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

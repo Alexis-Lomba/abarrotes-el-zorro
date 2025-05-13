@@ -1,15 +1,15 @@
 package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import unam.fes.aragon.tienda_el_zorro.application.service.FacturaService;
 import unam.fes.aragon.tienda_el_zorro.application.service.FindIdService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
+import unam.fes.aragon.tienda_el_zorro.domain.dto.DetalleFacturaDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.FacturaDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.*;
-import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.FacturaMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.UsuarioMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ClientMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ProductoMapper;
@@ -22,8 +22,8 @@ import unam.fes.aragon.tienda_el_zorro.infraestructure.validations.ProductoValid
 import unam.fes.aragon.tienda_el_zorro.infraestructure.validations.ProveedorValidator;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.validations.UsuarioValidator;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -32,7 +32,6 @@ public class FacturaServiceImpl implements FacturaService {
 
     private final ProductoValidation productoValidation;
     private final FacturaRepository facturaRepository;
-    private final FacturaMapper facturaMapper;
     private final ClienteValidation clienteValidation;
     private final ClientMapper clientMapper;
     private final ProveedorValidator proveedorValidator;
@@ -44,73 +43,113 @@ public class FacturaServiceImpl implements FacturaService {
     private final VentaRepository ventaRepository;
     private final FindIdService findIdService;
 
-
     @Override
+    @Transactional
     public FacturaDTO createFactura(FacturaDTO facturaDTO) {
-        Factura factura =  new Factura();
+        log.info("Starting creation of new invoice");
 
-        Cliente cliente = clienteValidation.validateCliente(clientMapper.toDTO(findIdService.findIdCliente(facturaDTO.getClienteId())));
+        try {
+            // Create the base Factura entity
+            Factura factura = new Factura();
 
-        List<DetalleFactura> detalles = facturaDTO.getProductos().stream()
-                .map(detalleFacturaDTO -> {
-                    // Validar existencia del proveedor usando su ID desde el DTO
+            // Get and validate client
+            Cliente cliente = clienteValidation.validateCliente(
+                    clientMapper.toDTO(findIdService.findIdCliente(facturaDTO.getClienteId()))
+            );
+            factura.setCliente(cliente);
+
+            // Set invoice date
+            factura.setFecha(facturaDTO.getFecha());
+
+            // Get and validate user
+            Usuario usuario = usuarioValidator.validateUsuario(
+                    usuarioMapper.toDto(findIdService.findIdUsuario(facturaDTO.getUsuarioId()))
+            );
+            factura.setUsuario(usuario);
+
+            // Initialize details list
+            List<DetalleFactura> detalles = new ArrayList<>();
+
+            // Temporary total calculation
+            float total = 0.0f;
+
+            // Process all products
+            if (facturaDTO.getProductos() != null) {
+                for (DetalleFacturaDTO detalleDTO : facturaDTO.getProductos()) {
+                    // Find the product
+                    Producto producto = findIdService.findIdProducto(detalleDTO.getProductoId());
+                    log.debug("Processing product: {}", producto.getNombre());
+
+                    // Get and validate provider
                     Proveedor proveedor = proveedorValidator.validateExistence(
-                          proveedorMapper.toDto(findIdService.findIdProveedor(
-                                  detalleFacturaDTO.getProductoDTO().getProveedorId()
-                    )));
-
-                    // Validar existencia del producto usando su ID y el ID del proveedor
-                    Producto producto = productoValidation.validateExistence(
-                            detalleFacturaDTO.getProductoDTO(),
-                            proveedor.getId(),
-                            detalleFacturaDTO.getCantidad()
+                            proveedorMapper.toDto(findIdService.findIdProveedor(producto.getProveedor().getId()))
                     );
 
-                    // Construir el detalle de la factura
+                    // Validate product (checks stock, etc.)
+                    producto = productoValidation.validateExistence(
+                            productoMapper.toDto(producto),
+                            proveedor.getId(),
+                            detalleDTO.getCantidad()
+                    );
+
+                    // Create detail entity
                     DetalleFactura detalle = new DetalleFactura();
                     detalle.setProducto(producto);
-                    detalle.setCantidad(detalleFacturaDTO.getCantidad());
+                    detalle.setCantidad(detalleDTO.getCantidad());
                     detalle.setPrecioUnitario(producto.getPrecio());
 
-                    return detalle;
-                }).collect(Collectors.toList()); // Versiones Java <16: Usar Collectors.toList()
+                    // Add to total
+                    total += (producto.getPrecio() * detalleDTO.getCantidad());
 
-        factura.setCliente(cliente);
-        factura.setDetalles(detalles);
-        detalles.forEach(detalle -> detalle.setFactura(factura));
-        factura.setFecha(facturaDTO.getFecha());
+                    // Add to list (don't set factura reference yet)
+                    detalles.add(detalle);
+                }
+            }
 
-        /*factura.setVenta(ventaRepository.findById(
-                facturaDTO.getVentaId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "No hay una venta con el id: " + facturaDTO.getVentaId())));
+            // Set total
+            log.info("Invoice total: {}", total);
+            factura.setTotal(total);
+            factura.setActiva(true);
 
-         */
+            // Save the factura first to get an ID
+            Factura savedFactura = facturaRepository.save(factura);
+            log.info("Created invoice with ID: {}", savedFactura.getId());
 
-        Usuario usuario = usuarioValidator.validateUsuario(usuarioMapper.toDto(findIdService.findIdUsuario(facturaDTO.getUsuarioId())));
+            // Now create the bidirectional relationship and save details
+            for (DetalleFactura detalle : detalles) {
+                detalle.setFactura(savedFactura);
+            }
+            savedFactura.setDetalles(detalles);
 
-        factura.setUsuario(usuario);
+            // Save again with details
+            savedFactura = facturaRepository.save(savedFactura);
 
-        log.info("Validando el total de la factura");
-        try{
-            ObjectMapper objectMapper = new ObjectMapper();
-            log.info("Lo que se tiene de la factura es: {}", objectMapper.writeValueAsString(factura));
-        }catch (Exception e){
-            e.printStackTrace();
+            // Create response DTO manually to avoid mapper issues
+            FacturaDTO responseDTO = new FacturaDTO();
+            responseDTO.setId(savedFactura.getId());
+            responseDTO.setFecha(savedFactura.getFecha());
+            responseDTO.setTotal(savedFactura.getTotal());
+            responseDTO.setClienteId(savedFactura.getCliente().getId());
+            responseDTO.setUsuarioId(savedFactura.getUsuario().getId());
+
+            List<DetalleFacturaDTO> detallesDTO = new ArrayList<>();
+            for (DetalleFactura detalle : savedFactura.getDetalles()) {
+                DetalleFacturaDTO detalleDTO = new DetalleFacturaDTO();
+                detalleDTO.setId(detalle.getId());
+                detalleDTO.setCantidad(detalle.getCantidad());
+                detalleDTO.setPrecioUnitario(detalle.getPrecioUnitario().doubleValue());
+                detalleDTO.setProductoId(detalle.getProducto().getId());
+                detalleDTO.setFacturaId(savedFactura.getId());
+                detallesDTO.add(detalleDTO);
+            }
+            responseDTO.setProductos(detallesDTO);
+
+            return responseDTO;
+
+        } catch (Exception e) {
+            log.error("Error creating invoice: ", e);
+            throw e;
         }
-
-
-        float total = detalles.stream()
-                .map(d -> d.getPrecioUnitario() * d.getCantidad())
-                .reduce(0.0f, Float::sum);
-
-        log.info("Lo que se tiene de la total es: {}", total);
-
-        factura.setTotal(total);
-
-        facturaRepository.save(factura);
-
-        return facturaMapper.toDto(factura);
     }
 
     @Override

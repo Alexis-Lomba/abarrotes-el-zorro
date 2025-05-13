@@ -1,6 +1,7 @@
 package unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass;
 
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.DetalleFacturaDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.FacturaDTO;
@@ -10,83 +11,117 @@ import unam.fes.aragon.tienda_el_zorro.domain.entity.Factura;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Usuario;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Venta;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
+@Primary  // Mark as primary to override any existing implementations
 public class FacturaMapper {
 
     private final DetalleFacturaMapper detalleFacturaMapper;
 
-    // Convertir Entidad a DTO
+    // Convertir Entidad a DTO - Safe version that prevents infinite recursion
     public FacturaDTO toDto(Factura factura) {
         if (factura == null) return null;
 
-        return FacturaDTO.builder()
-                .id(factura.getId())
-                .fecha(factura.getFecha())
-                .total(factura.getTotal())
-                .clienteId(factura.getCliente() != null ? factura.getCliente().getId() : null)
-                .usuarioId(factura.getUsuario() != null ? factura.getUsuario().getId() : null)
-                .ventaId(factura.getVenta() != null ? factura.getVenta().getId() : null)
-                .productos(toDetalleFacturaDtoList(factura.getDetalles()))
-                .build();
+        // Create basic DTO without details first
+        FacturaDTO dto = new FacturaDTO();
+        dto.setId(factura.getId());
+        dto.setFecha(factura.getFecha());
+        dto.setTotal(factura.getTotal());
+
+        if (factura.getCliente() != null) {
+            dto.setClienteId(factura.getCliente().getId());
+        }
+
+        if (factura.getUsuario() != null) {
+            dto.setUsuarioId(factura.getUsuario().getId());
+        }
+
+        if (factura.getVenta() != null) {
+            dto.setVentaId(factura.getVenta().getId());
+        }
+
+        // Now handle details separately to avoid circular references
+        if (factura.getDetalles() != null && !factura.getDetalles().isEmpty()) {
+            List<DetalleFacturaDTO> detallesDto = new ArrayList<>();
+
+            for (DetalleFactura detalle : factura.getDetalles()) {
+                // Create a new DetalleFactura that doesn't reference back to this factura
+                DetalleFactura detalleCopy = new DetalleFactura();
+                detalleCopy.setId(detalle.getId());
+                detalleCopy.setCantidad(detalle.getCantidad());
+                detalleCopy.setPrecioUnitario(detalle.getPrecioUnitario());
+
+                if (detalle.getProducto() != null) {
+                    detalleCopy.setProducto(detalle.getProducto());
+                }
+
+                // Convert to DTO
+                DetalleFacturaDTO detalleDto = detalleFacturaMapper.toDto(detalleCopy);
+
+                // Manually set facturaId to avoid using the getter that could cause recursion
+                detalleDto.setFacturaId(factura.getId());
+
+                detallesDto.add(detalleDto);
+            }
+
+            dto.setProductos(detallesDto);
+        } else {
+            dto.setProductos(Collections.emptyList());
+        }
+
+        return dto;
     }
 
-    // Convertir DTO a Entidad
+    // Convertir DTO a Entidad - Safe version that prevents infinite recursion
     public Factura toEntity(FacturaDTO dto) {
         if (dto == null) return null;
 
+        // Create basic entity without details first
         Factura factura = new Factura();
         factura.setId(dto.getId());
         factura.setFecha(dto.getFecha());
         factura.setTotal(dto.getTotal());
         factura.setActiva(true); // Valor por defecto
 
-        // Mapear Cliente (solo ID)
+        // Set simple references
         if (dto.getClienteId() != null) {
             Cliente cliente = new Cliente();
             cliente.setId(dto.getClienteId());
             factura.setCliente(cliente);
         }
 
-        // Mapear Usuario (solo ID)
         if (dto.getUsuarioId() != null) {
             Usuario usuario = new Usuario();
             usuario.setId(dto.getUsuarioId());
             factura.setUsuario(usuario);
         }
 
-        // Mapear Venta (solo ID)
         if (dto.getVentaId() != null) {
             Venta venta = new Venta();
             venta.setId(dto.getVentaId());
             factura.setVenta(venta);
         }
 
-        // Mapear Detalles y establecer relación bidireccional
-        List<DetalleFactura> detalles = toDetalleFacturaEntityList(dto.getProductos());
-        detalles.forEach(detalle -> detalle.setFactura(factura));
-        factura.setDetalles(detalles);
+        // Now handle details
+        if (dto.getProductos() != null && !dto.getProductos().isEmpty()) {
+            List<DetalleFactura> detalles = new ArrayList<>();
+
+            for (DetalleFacturaDTO detalleDto : dto.getProductos()) {
+                DetalleFactura detalle = detalleFacturaMapper.toEntity(detalleDto);
+                detalle.setFactura(factura);
+                detalles.add(detalle);
+            }
+
+            factura.setDetalles(detalles);
+        } else {
+            factura.setDetalles(Collections.emptyList());
+        }
 
         return factura;
     }
-
-    // Métodos auxiliares para listas
-    private List<DetalleFacturaDTO> toDetalleFacturaDtoList(List<DetalleFactura> detalles) {
-        if (detalles == null) return Collections.emptyList();
-        return detalles.stream()
-                .map(detalleFacturaMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    private List<DetalleFactura> toDetalleFacturaEntityList(List<DetalleFacturaDTO> detallesDTO) {
-        if (detallesDTO == null) return Collections.emptyList();
-        return detallesDTO.stream()
-                .map(detalleFacturaMapper::toEntity)
-                .collect(Collectors.toList());
-    }
 }
-

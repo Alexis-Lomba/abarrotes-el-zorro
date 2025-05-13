@@ -6,10 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -27,9 +24,11 @@ public class DetalleFactura implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "factura_id")
+    @ToString.Exclude
     private Factura factura;
 
     @ManyToOne
     @JoinColumn(name = "producto_id")
+    @ToString.Exclude
     private Producto producto;
 }
