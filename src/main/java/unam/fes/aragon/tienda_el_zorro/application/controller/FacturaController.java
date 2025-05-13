@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import unam.fes.aragon.tienda_el_zorro.application.service.FacturaService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.FacturaDTO;
-import unam.fes.aragon.tienda_el_zorro.domain.dto.ProductoDTO;
 
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class FacturaController {
     @PostMapping("/create")
     public FacturaDTO create(@RequestBody FacturaDTO request) {
         log.info("Incia creacion de Factura: {}", request);
-        return facturaService.createInvoice(request);
+        return facturaService.createFactura(request);
     }
 
     @PostMapping("/client/")

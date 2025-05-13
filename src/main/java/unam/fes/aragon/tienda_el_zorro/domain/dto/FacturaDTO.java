@@ -15,8 +15,9 @@ import java.util.List;
 public class FacturaDTO {
     private Long id;
     private LocalDateTime fecha;
-    private ClienteDTO cliente;
+    private Long clienteId;
     private List<DetalleFacturaDTO> productos;
     private Long ventaId;
     private Float total;
+    private Long usuarioId;
 } 

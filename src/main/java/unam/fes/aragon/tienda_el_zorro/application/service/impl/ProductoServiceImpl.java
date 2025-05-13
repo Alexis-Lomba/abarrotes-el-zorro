@@ -3,6 +3,7 @@ package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import unam.fes.aragon.tienda_el_zorro.application.service.FindIdService;
 import unam.fes.aragon.tienda_el_zorro.application.service.ProductoService;
 import unam.fes.aragon.tienda_el_zorro.application.service.ProveedorService;
 import unam.fes.aragon.tienda_el_zorro.domain.constants.BussinessConstants;
@@ -39,31 +40,33 @@ public class ProductoServiceImpl implements ProductoService {
 
     private ProveedorRepository proveedorRepository;
 
+    private final FindIdService findIdService;
+
     @Override
     public List<ProductoDTO> findAll() {
         log.info("Find all productos");
         return productoRepository.findAllProductos().stream()
-                .map(productoMapper :: toDTO)
+                .map(productoMapper :: toDto)
                 .toList();
     }
 
     @Override
     public ProductoDTO createProducto(ProductoDTO productoDTO) {
         log.info("Se busca proveedor para el producto");
-        Proveedor proveedor = proveedorRepository.findByName(productoDTO.getProveedor().getNombre());
+        Proveedor proveedor = proveedorRepository.findByName(findIdService.findIdProveedor(productoDTO.getProveedorId()).getNombre());
         log.info("REspuesta de Proveedor {}", proveedor);
         ProveedorDTO proveedorDTO;
 
         if (proveedor == null) {
             log.info("Se crea proveedor");
-            proveedorDTO =  proveedorService.createProveedor(productoDTO.getProveedor());
-            proveedor = proveedorRepository.findByName(productoDTO.getProveedor().getNombre());
+            proveedorDTO =  proveedorService.createProveedor(proveedorMapper.toDto(findIdService.findIdProveedor(productoDTO.getProveedorId())));
+            proveedor = proveedorRepository.findByName(productoMapper.toEntity(productoDTO).getProveedor().getNombre());
             log.info("Nuevo Proveedor {}", proveedorDTO);
         }
 
         log.info("Se valida existencia del producto y proveedor");
         productoValidation.validate(productoDTO, proveedor.getId());
-        Inventario inventario = inventarioMapper.toEntity(productoDTO.getInventario());
+        Inventario inventario = inventarioMapper.toEntity(inventarioMapper.toDto(productoMapper.toEntity(productoDTO).getInventario()));
 
 
         Producto producto = productoMapper.toEntity(productoDTO);
@@ -74,7 +77,7 @@ public class ProductoServiceImpl implements ProductoService {
         producto = productoRepository.save(producto);
 
         log.info("Se crea producto ");
-        productoDTO = productoMapper.toDTO(producto);
+        productoDTO = productoMapper.toDto(producto);
         productoDTO.setStatus(BussinessConstants.CREADO_CORRECTAMENTE);
 
         return productoDTO;

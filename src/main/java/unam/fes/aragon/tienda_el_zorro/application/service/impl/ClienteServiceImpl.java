@@ -13,13 +13,18 @@ import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.ClienteReposit
 import java.util.List;
 
 @Service
-@AllArgsConstructor
 @Slf4j
 public class ClienteServiceImpl implements ClienteService {
 
-    private ClienteRepository clienteRepository;
-    private ClientMapper clienteMapper;
-    private ValidateEmail validateEmail;
+    private final ClienteRepository clienteRepository;
+    private final ClientMapper clienteMapper;
+    private final ValidateEmail validateEmail;
+
+    public ClienteServiceImpl(ClienteRepository clienteRepository, ClientMapper clienteMapper, ValidateEmail validateEmail) {
+        this.clienteRepository = clienteRepository;
+        this.clienteMapper = clienteMapper;
+        this.validateEmail = validateEmail;
+    }
 
     @Override
     public List<ClienteDTO> findAll() {

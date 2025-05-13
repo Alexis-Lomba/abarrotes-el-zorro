@@ -8,8 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
-    @Query(value = "select cli.email " +
-            "from cliente cli " +
-            "where cli.email = ?1", nativeQuery = true)
-    Cliente findByEmail( String email);
+    @Query(value = "select * from cliente where email = ?1", nativeQuery = true)
+    Cliente findByEmail(String email);
+
 } 

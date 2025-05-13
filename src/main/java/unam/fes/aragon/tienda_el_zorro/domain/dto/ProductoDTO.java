@@ -16,9 +16,9 @@ public class ProductoDTO {
     private Long id;
     private String nombre;
     private String descripcion;
-    private Double precio;
+    private Float precio;
     private String imagenUrl;
     private String status;
-    private ProveedorDTO proveedor;
-    private InventarioDTO inventario;
+    private Long proveedorId;
+    private InventarioDTO inventarioDTO;
 } 

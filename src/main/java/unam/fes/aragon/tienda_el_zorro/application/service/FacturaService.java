@@ -6,7 +6,7 @@ import unam.fes.aragon.tienda_el_zorro.domain.dto.FacturaDTO;
 import java.util.List;
 
 public interface FacturaService {
-    FacturaDTO createInvoice(FacturaDTO facturaDTO);
+    FacturaDTO createFactura(FacturaDTO facturaDTO);
 
     List<FacturaDTO> findAllByClient(ClienteDTO clienteDTO);
 

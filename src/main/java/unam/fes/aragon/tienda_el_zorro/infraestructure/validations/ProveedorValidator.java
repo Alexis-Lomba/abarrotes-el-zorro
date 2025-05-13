@@ -17,7 +17,7 @@ import java.time.LocalDate;
 public class ProveedorValidator {
 
     private final ProductoRepository productoRepository;
-    private ProveedorRepository proveedorRepository;
+    private final ProveedorRepository proveedorRepository;
 
     public void validate(Proveedor proveedor) {
         if (proveedorRepository.findByName(proveedor.getNombre()) != null) {

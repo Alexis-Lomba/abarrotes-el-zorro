@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.UsuarioRepository;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -43,6 +44,11 @@ public class Factura implements Serializable {
 
     @OneToOne(mappedBy = "factura")
     private Venta venta;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
 
 // Getters y Setters
 

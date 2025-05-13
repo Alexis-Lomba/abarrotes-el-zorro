@@ -31,7 +31,7 @@ public class Producto implements Serializable {
 
     private String nombre;
     private String descripcion;
-    private Double precio;
+    private Float precio;
     private String imagenUrl;
 
     @ManyToOne

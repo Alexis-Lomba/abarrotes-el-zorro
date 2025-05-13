@@ -1,5 +1,6 @@
 package unam.fes.aragon.tienda_el_zorro.infraestructure.validations;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import unam.fes.aragon.tienda_el_zorro.domain.constants.BussinessConstants;
 import unam.fes.aragon.tienda_el_zorro.domain.error.DinError;
@@ -9,9 +10,10 @@ import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.ClienteReposit
 import java.time.LocalDate;
 
 @Service
+@AllArgsConstructor
 public class ValidateEmail {
 
-    private ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
 
     public void validate(String email) {
         if (clienteRepository.findByEmail(email) != null) {

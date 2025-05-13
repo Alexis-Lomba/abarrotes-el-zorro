@@ -23,7 +23,7 @@ public class DetalleFactura implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer cantidad;
-    private Double precioUnitario;
+    private Float precioUnitario;
 
     @ManyToOne
     @JoinColumn(name = "factura_id")

@@ -10,11 +10,7 @@ import unam.fes.aragon.tienda_el_zorro.domain.entity.DetalleFactura;
 public interface DetalleFacturaMapper {
     DetalleFacturaMapper INSTANCE = Mappers.getMapper(DetalleFacturaMapper.class);
 
-    @Mapping(target = "facturaId", source = "factura.id")
-    @Mapping(target = "productoId", source = "producto.id")
     DetalleFacturaDTO toDto(DetalleFactura detalleFactura);
 
-    @Mapping(target = "factura", ignore = true)
-    @Mapping(target = "producto", ignore = true)
     DetalleFactura toEntity(DetalleFacturaDTO detalleFacturaDTO);
 } 

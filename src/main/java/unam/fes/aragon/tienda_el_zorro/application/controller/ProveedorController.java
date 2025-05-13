@@ -1,10 +1,7 @@
 package unam.fes.aragon.tienda_el_zorro.application.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import unam.fes.aragon.tienda_el_zorro.application.service.ProveedorService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ProveedorDTO;
 
@@ -21,7 +18,7 @@ public class ProveedorController {
         this.proveedorService = proveedorService;
     }
 
-    @PostMapping("/proveedors")
+    @GetMapping("/proveedors")
     public List<ProveedorDTO> getAll() {
         return proveedorService.findAll();
     }
