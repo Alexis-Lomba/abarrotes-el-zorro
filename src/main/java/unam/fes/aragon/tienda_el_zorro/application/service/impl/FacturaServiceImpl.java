@@ -3,6 +3,7 @@ package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
+import org.springframework.jdbc.core.metadata.DerbyTableMetaDataProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import unam.fes.aragon.tienda_el_zorro.application.service.FacturaService;
@@ -13,10 +14,7 @@ import unam.fes.aragon.tienda_el_zorro.domain.dto.FacturaDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.*;
 import unam.fes.aragon.tienda_el_zorro.domain.error.DinError;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.UsuarioMapper;
-import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ClientMapper;
-import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.FacturaMapper;
-import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ProductoMapper;
-import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ProveedorMapper;
+import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.*;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.*;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.validations.ClienteValidation;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.validations.ProductoValidation;
@@ -26,6 +24,7 @@ import unam.fes.aragon.tienda_el_zorro.infraestructure.validations.UsuarioValida
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -49,36 +48,45 @@ public class FacturaServiceImpl implements FacturaService {
     private final ProductoRepository productoRepository;
     private final InventarioRepository inventarioRepository;
     private final FacturaMapper facturaMapper;
+    private final DetalleFacturaMapper detalleFacturaMapper;
 
     @Override
     @Transactional
     public FacturaDTO createFactura(FacturaDTO facturaDTO) {
         Factura factura = facturaMapper.toEntity(facturaDTO);
 
-        //factura.setCliente(clienteRepository.findById(facturaDTO.getUsuarioId()).orElseThrow());
-        //factura.setCliente(clienteRepository.findById(facturaDTO.getUsuarioId()).orElseThrow());
+        log.info("Actualizando inventario...");
 
-        log.info(facturaDTO.getDetalles().toString());
+        List<DetalleFactura> detalles = new ArrayList<>();
 
-        /**
-         * Falta corregir el mapper de la factura
-         */
+        for (DetalleFacturaDTO detalleDTO : facturaDTO.getDetalles()) {
+            Producto producto = productoRepository.findById(detalleDTO.getProductoId())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + detalleDTO.getProductoId()));
 
-        // Guarda la factura con los detalles
+            if (producto.getInventario().getCantidadActual() < detalleDTO.getCantidad()) {
+                throw new RuntimeException("No hay stock suficiente para el producto ID: " + producto.getId());
+            }
 
-        log.info("Actualizacion del inventario");
-
-        // (Opcional) Actualizar inventario
-        for (DetalleFacturaDTO detalle : facturaDTO.getDetalles()) {
-            Producto producto = productoRepository.findById(detalle.getProductoId()).orElseThrow();
-            if (producto.getInventario().getCantidadActual()< detalle.getCantidad()) throw new RuntimeException("No hay stok");
+            // Actualiza inventario
             Inventario inventario = producto.getInventario();
-            inventario.setCantidadActual(inventario.getCantidadActual() - detalle.getCantidad());
+            inventario.setCantidadActual(inventario.getCantidadActual() - detalleDTO.getCantidad());
             inventarioRepository.save(inventario);
+
+            // Construye el detalle de factura
+            DetalleFactura detalle = new DetalleFactura();
+            detalle.setProducto(producto);
+            detalle.setCantidad(detalleDTO.getCantidad());
+            detalle.setPrecioUnitario(producto.getPrecio());
+            detalle.setFactura(factura);
+
+            detalles.add(detalle);
         }
+        factura.setFecha(LocalDateTime.now());
+        factura.setDetalles(detalles);
 
         factura.setTotal(total(facturaDTO));
 
+        // Guarda la factura
         factura = facturaRepository.save(factura);
 
         return facturaMapper.toDto(factura);
@@ -87,8 +95,11 @@ public class FacturaServiceImpl implements FacturaService {
 
 
     @Override
-    public List<FacturaDTO> findAllByClient(ClienteDTO clienteDTO) {
-        return List.of();
+    public List<FacturaDTO> findAllByClientNombre(String nombre) {
+        List<Factura> facturas = facturaRepository.findByNombreClienteIgnoreCase(nombre);
+        return facturas.stream()
+                .map(facturaMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override

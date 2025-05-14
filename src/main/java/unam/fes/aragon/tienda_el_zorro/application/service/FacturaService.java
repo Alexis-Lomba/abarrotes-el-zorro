@@ -8,7 +8,9 @@ import java.util.List;
 public interface FacturaService {
     FacturaDTO createFactura(FacturaDTO facturaDTO);
 
-    List<FacturaDTO> findAllByClient(ClienteDTO clienteDTO);
+    List<FacturaDTO> findAllByClientNombre(String nombre);
 
     List<FacturaDTO> findAllByDay(FacturaDTO facturaDTO);
+
+
 }
