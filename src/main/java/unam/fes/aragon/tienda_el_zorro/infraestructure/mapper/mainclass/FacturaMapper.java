@@ -27,55 +27,23 @@ public class FacturaMapper {
     public FacturaDTO toDto(Factura factura) {
         if (factura == null) return null;
 
-        // Create basic DTO without details first
         FacturaDTO dto = new FacturaDTO();
         dto.setId(factura.getId());
         dto.setFecha(factura.getFecha());
         dto.setTotal(factura.getTotal());
+        dto.setClienteId(factura.getCliente().getId());
+        dto.setUsuarioId(factura.getUsuario().getId());
+        dto.setVentaId(factura.getVenta() != null ? factura.getVenta().getId() : null);
 
-        if (factura.getCliente() != null) {
-            dto.setClienteId(factura.getCliente().getId());
-        }
-
-        if (factura.getUsuario() != null) {
-            dto.setUsuarioId(factura.getUsuario().getId());
-        }
-
-        if (factura.getVenta() != null) {
-            dto.setVentaId(factura.getVenta().getId());
-        }
-
-        // Now handle details separately to avoid circular references
-        if (factura.getDetalles() != null && !factura.getDetalles().isEmpty()) {
-            List<DetalleFacturaDTO> detallesDto = new ArrayList<>();
-
-            for (DetalleFactura detalle : factura.getDetalles()) {
-                // Create a new DetalleFactura that doesn't reference back to this factura
-                DetalleFactura detalleCopy = new DetalleFactura();
-                detalleCopy.setId(detalle.getId());
-                detalleCopy.setCantidad(detalle.getCantidad());
-                detalleCopy.setPrecioUnitario(detalle.getPrecioUnitario());
-
-                if (detalle.getProducto() != null) {
-                    detalleCopy.setProducto(detalle.getProducto());
-                }
-
-                // Convert to DTO
-                DetalleFacturaDTO detalleDto = detalleFacturaMapper.toDto(detalleCopy);
-
-                // Manually set facturaId to avoid using the getter that could cause recursion
-                detalleDto.setFacturaId(factura.getId());
-
-                detallesDto.add(detalleDto);
-            }
-
-            dto.setProductos(detallesDto);
-        } else {
-            dto.setProductos(Collections.emptyList());
-        }
+        // convierte cada detalle directamente
+        List<DetalleFacturaDTO> detallesDto = factura.getDetalles().stream()
+                .map(detalleFacturaMapper::toDto)
+                .collect(Collectors.toList());
+        dto.setDetalles(detallesDto);
 
         return dto;
     }
+
 
     // Convertir DTO a Entidad - Safe version that prevents infinite recursion
     public Factura toEntity(FacturaDTO dto) {
@@ -108,10 +76,10 @@ public class FacturaMapper {
         }
 
         // Now handle details
-        if (dto.getProductos() != null && !dto.getProductos().isEmpty()) {
+        if (dto.getDetalles() != null && !dto.getDetalles().isEmpty()) {
             List<DetalleFactura> detalles = new ArrayList<>();
 
-            for (DetalleFacturaDTO detalleDto : dto.getProductos()) {
+            for (DetalleFacturaDTO detalleDto : dto.getDetalles()) {
                 DetalleFactura detalle = detalleFacturaMapper.toEntity(detalleDto);
                 detalle.setFactura(factura);
                 detalles.add(detalle);

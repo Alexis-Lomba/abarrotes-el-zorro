@@ -21,7 +21,7 @@ public class FacturaDTO {
 
     // Adding JsonIgnoreProperties to break potential circular references
     @JsonIgnoreProperties("facturaId")
-    private List<DetalleFacturaDTO> productos;
+    private List<DetalleFacturaDTO> detalles;
 
     private Long ventaId;
     private Float total;

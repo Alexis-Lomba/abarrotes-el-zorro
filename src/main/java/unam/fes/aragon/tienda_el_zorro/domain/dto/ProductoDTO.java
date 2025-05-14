@@ -20,6 +20,5 @@ public class ProductoDTO {
     private String imagenUrl;
     private String status;
     private Long proveedorId;
-    @JsonIgnore
     private InventarioDTO inventarioDTO;
 } 
