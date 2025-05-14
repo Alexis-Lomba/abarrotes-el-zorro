@@ -11,9 +11,10 @@ import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.DetalleFacturaDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.FacturaDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.*;
-import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.FacturaMapper;
+import unam.fes.aragon.tienda_el_zorro.domain.error.DinError;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.UsuarioMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ClientMapper;
+import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.FacturaMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ProductoMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ProveedorMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.*;
@@ -53,18 +54,29 @@ public class FacturaServiceImpl implements FacturaService {
     @Transactional
     public FacturaDTO createFactura(FacturaDTO facturaDTO) {
         Factura factura = facturaMapper.toEntity(facturaDTO);
+
+        //factura.setCliente(clienteRepository.findById(facturaDTO.getUsuarioId()).orElseThrow());
+        //factura.setCliente(clienteRepository.findById(facturaDTO.getUsuarioId()).orElseThrow());
+
         log.info(facturaDTO.getDetalles().toString());
 
+        /**
+         * Falta corregir el mapper de la factura
+         */
+
         // Guarda la factura con los detalles
-        factura = facturaRepository.save(factura);
+
+        log.info("Actualizacion del inventario");
 
         // (Opcional) Actualizar inventario
-        for (DetalleFactura detalle : factura.getDetalles()) {
-            Producto producto = productoRepository.findById(detalle.getProducto().getId()).orElseThrow();
+        for (DetalleFacturaDTO detalle : facturaDTO.getDetalles()) {
+            Producto producto = productoRepository.findById(detalle.getProductoId()).orElseThrow();
             Inventario inventario = producto.getInventario();
             inventario.setCantidadActual(inventario.getCantidadActual() - detalle.getCantidad());
             inventarioRepository.save(inventario);
         }
+
+        factura = facturaRepository.save(factura);
 
         return facturaMapper.toDto(factura);
     }
