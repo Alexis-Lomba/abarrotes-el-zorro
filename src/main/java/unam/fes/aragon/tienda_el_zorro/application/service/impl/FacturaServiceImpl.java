@@ -71,10 +71,13 @@ public class FacturaServiceImpl implements FacturaService {
         // (Opcional) Actualizar inventario
         for (DetalleFacturaDTO detalle : facturaDTO.getDetalles()) {
             Producto producto = productoRepository.findById(detalle.getProductoId()).orElseThrow();
+            if (producto.getInventario().getCantidadActual()< detalle.getCantidad()) throw new RuntimeException("No hay stok");
             Inventario inventario = producto.getInventario();
             inventario.setCantidadActual(inventario.getCantidadActual() - detalle.getCantidad());
             inventarioRepository.save(inventario);
         }
+
+        factura.setTotal(total(facturaDTO));
 
         factura = facturaRepository.save(factura);
 
@@ -92,4 +95,14 @@ public class FacturaServiceImpl implements FacturaService {
     public List<FacturaDTO> findAllByDay(FacturaDTO facturaDTO) {
         return List.of();
     }
+
+    private Float total(FacturaDTO facturaDTO) {
+        Float total = 0f;
+        for (DetalleFacturaDTO detalle : facturaDTO.getDetalles()) {
+            Producto producto = productoRepository.findById(detalle.getProductoId()).orElseThrow();
+            total = producto.getPrecio() * detalle.getCantidad();
+        }
+        return total;
+    }
+
 }
