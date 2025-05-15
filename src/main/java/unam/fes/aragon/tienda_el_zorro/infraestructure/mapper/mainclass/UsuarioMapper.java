@@ -3,7 +3,6 @@ package unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass;
 import org.springframework.stereotype.Service;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.UsuarioDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Usuario;
-import unam.fes.aragon.tienda_el_zorro.domain.entity.Venta;
 
 import java.util.stream.Collectors;
 
@@ -27,11 +26,6 @@ public class UsuarioMapper {
                 .roles(usuario.getRoles() != null
                         ? usuario.getRoles().stream()
                         .map(rolMapper::toDTO)
-                        .collect(Collectors.toList())
-                        : null)
-                .ventasIds(usuario.getVentas() != null
-                        ? usuario.getVentas().stream()
-                        .map(Venta::getId)
                         .collect(Collectors.toList())
                         : null)
                 .build();

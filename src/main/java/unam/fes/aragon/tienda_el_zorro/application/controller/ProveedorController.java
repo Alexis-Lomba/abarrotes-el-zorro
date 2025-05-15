@@ -28,4 +28,9 @@ public class ProveedorController {
         log.info("Incia creacion de Proveedor: {}", proveedor);
         return proveedorService.createProveedor(proveedor);
     }
+
+    @DeleteMapping("/delete")
+    public void delete(@RequestBody Long id){
+        proveedorService.deleteProveedor(id);
+    }
 }

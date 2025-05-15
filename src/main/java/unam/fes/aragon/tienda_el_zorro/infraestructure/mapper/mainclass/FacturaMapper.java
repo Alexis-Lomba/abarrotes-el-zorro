@@ -9,7 +9,6 @@ import unam.fes.aragon.tienda_el_zorro.domain.entity.Cliente;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.DetalleFactura;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Factura;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Usuario;
-import unam.fes.aragon.tienda_el_zorro.domain.entity.Venta;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +32,6 @@ public class FacturaMapper {
         dto.setTotal(factura.getTotal());
         dto.setClienteId(factura.getCliente().getId());
         dto.setUsuarioId(factura.getUsuario().getId());
-        dto.setVentaId(factura.getVenta() != null ? factura.getVenta().getId() : null);
 
         // convierte cada detalle directamente
         List<DetalleFacturaDTO> detallesDto = factura.getDetalles().stream()
@@ -67,12 +65,6 @@ public class FacturaMapper {
             Usuario usuario = new Usuario();
             usuario.setId(dto.getUsuarioId());
             factura.setUsuario(usuario);
-        }
-
-        if (dto.getVentaId() != null) {
-            Venta venta = new Venta();
-            venta.setId(dto.getVentaId());
-            factura.setVenta(venta);
         }
 
         // Now handle details

@@ -1,9 +1,9 @@
 package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import unam.fes.aragon.tienda_el_zorro.application.service.ClienteService;
+import unam.fes.aragon.tienda_el_zorro.application.service.FindIdService;
 import unam.fes.aragon.tienda_el_zorro.domain.constants.BussinessConstants;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ClientMapper;
@@ -19,11 +19,13 @@ public class ClienteServiceImpl implements ClienteService {
     private final ClienteRepository clienteRepository;
     private final ClientMapper clienteMapper;
     private final ValidateEmail validateEmail;
+    private final FindIdService findIdService;
 
-    public ClienteServiceImpl(ClienteRepository clienteRepository, ClientMapper clienteMapper, ValidateEmail validateEmail) {
+    public ClienteServiceImpl(ClienteRepository clienteRepository, ClientMapper clienteMapper, ValidateEmail validateEmail, FindIdService findIdService) {
         this.clienteRepository = clienteRepository;
         this.clienteMapper = clienteMapper;
         this.validateEmail = validateEmail;
+        this.findIdService = findIdService;
     }
 
     @Override
@@ -43,6 +45,17 @@ public class ClienteServiceImpl implements ClienteService {
         clienteDTO.setStatus(BussinessConstants.CREADO_CORRECTAMENTE);
 
         return clienteDTO;
+    }
+
+    @Override
+    public void deleteClienteByNombre(String nombre) {
+        clienteRepository.deleteByNombre(nombre);
+    }
+
+    @Override
+    public void deleteClientById(Long id){
+        findIdService.findIdCliente(id);
+        clienteRepository.deleteById(id);
     }
 
 } 

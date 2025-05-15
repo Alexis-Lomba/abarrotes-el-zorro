@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Cliente;
-import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.ClienteMapper;
+import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ClientMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.ClienteRepository;
 
 @Service
@@ -14,7 +14,7 @@ import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.ClienteReposit
 public class ClienteValidation {
 
     private final ClienteRepository clienteRepository;
-    private final ClienteMapper clienteMapper;
+    private final ClientMapper clienteMapper;
 
     public Cliente validateCliente(ClienteDTO clienteDTO) {
         log.info("Validando cliente en creación de factura {}", clienteDTO.toString());

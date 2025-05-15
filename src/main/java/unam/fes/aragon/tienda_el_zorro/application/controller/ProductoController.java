@@ -1,10 +1,9 @@
 package unam.fes.aragon.tienda_el_zorro.application.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import unam.fes.aragon.tienda_el_zorro.application.service.ProductoService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ProductoDTO;
 
@@ -31,4 +30,16 @@ public class ProductoController {
         log.info("Incia creacion de Producto: {}", request);
         return productoService.createProducto(request);
     }
+
+    @DeleteMapping("/delete")
+    public void delete(@RequestParam Long id){
+        productoService.deleteProducto(id);
+    }
+
+    @PostMapping("/productos/{id}/imagen")
+    public ResponseEntity<String> subirImagen(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        productoService.uploadImage(id, file);
+        return ResponseEntity.ok("Imagen subida correctamente");
+    }
+
 }

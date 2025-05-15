@@ -2,11 +2,7 @@ package unam.fes.aragon.tienda_el_zorro.application.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import unam.fes.aragon.tienda_el_zorro.application.service.ClienteService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
 
@@ -32,5 +28,15 @@ public class ClienteController {
     public ClienteDTO createClient(@RequestBody ClienteDTO request) throws Exception {
         log.info("Comienza la cración del del Cliente DTO: {}", request);
         return clienteService.createCliente(request);
+    }
+
+    @DeleteMapping("/delete")
+    public void deleteClient(@RequestParam String nombre){
+        clienteService.deleteClienteByNombre(nombre);
+    }
+
+    @DeleteMapping("delete-id")
+    public void deleteClientById(@RequestParam Long id){
+        clienteService.deleteClientById(id);
     }
 }

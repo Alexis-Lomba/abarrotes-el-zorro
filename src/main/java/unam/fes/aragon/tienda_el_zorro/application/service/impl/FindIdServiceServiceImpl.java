@@ -19,7 +19,6 @@ public class FindIdServiceServiceImpl implements FindIdService {
     private final ProveedorRepository proveedorRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
-    private final VentaRepository ventaRepository;
 
 
     @Override
@@ -68,12 +67,6 @@ public class FindIdServiceServiceImpl implements FindIdService {
     public Usuario findIdUsuario(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No se encontró el usuario"));
-    }
-
-    @Override
-    public Venta findIdVenta(Long id) {
-        return ventaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No se encontró la venta"));
     }
 
 }

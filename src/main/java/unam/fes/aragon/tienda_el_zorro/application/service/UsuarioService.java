@@ -9,4 +9,7 @@ public interface UsuarioService {
     List<UsuarioDTO> findAll();
     
     UsuarioDTO createUsuario(UsuarioDTO usuarioDTO);
+
+    void deleteUsuarioById(Long id);
+
 }

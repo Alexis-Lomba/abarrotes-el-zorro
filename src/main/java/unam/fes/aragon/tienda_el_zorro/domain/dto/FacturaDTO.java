@@ -18,12 +18,8 @@ public class FacturaDTO {
     private Long id;
     private LocalDateTime fecha;
     private Long clienteId;
-
-    // Adding JsonIgnoreProperties to break potential circular references
     @JsonIgnoreProperties("facturaId")
     private List<DetalleFacturaDTO> detalles;
-
-    private Long ventaId;
     private Float total;
     private Long usuarioId;
 }

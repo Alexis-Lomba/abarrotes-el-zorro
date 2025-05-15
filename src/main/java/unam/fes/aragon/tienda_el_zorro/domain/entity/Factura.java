@@ -42,9 +42,6 @@ public class Factura implements Serializable {
     @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL)
     private List<DetalleFactura> detalles;
 
-    @OneToOne(mappedBy = "factura")
-    private Venta venta;
-
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;

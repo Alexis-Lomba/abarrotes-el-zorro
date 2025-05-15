@@ -27,4 +27,10 @@ public class UsuarioController {
     public UsuarioDTO createUsuario(@RequestBody UsuarioDTO usuarioDTO){
         return usuarioService.createUsuario(usuarioDTO);
     }
+
+    @DeleteMapping("/delete-id")
+    public void deleteUsuarioById(@RequestParam Long id){
+        usuarioService.deleteUsuarioById(id);
+    }
+
 }

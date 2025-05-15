@@ -8,4 +8,9 @@ public interface ClienteService {
     List<ClienteDTO> findAll();
     
     ClienteDTO createCliente(ClienteDTO clienteDTO) throws Exception;
+
+    void deleteClienteByNombre(String nombre);
+
+    void deleteClientById(Long id);
+
 } 

@@ -2,18 +2,13 @@ package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.properties.bind.validation.BindValidationException;
-import org.springframework.jdbc.core.metadata.DerbyTableMetaDataProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import unam.fes.aragon.tienda_el_zorro.application.service.FacturaService;
 import unam.fes.aragon.tienda_el_zorro.application.service.FindIdService;
-import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.DetalleFacturaDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.FacturaDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.*;
-import unam.fes.aragon.tienda_el_zorro.domain.error.DinError;
-import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.UsuarioMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.*;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.*;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.validations.ClienteValidation;
@@ -41,7 +36,6 @@ public class FacturaServiceImpl implements FacturaService {
     private final ProductoMapper productoMapper;
     private final UsuarioValidator usuarioValidator;
     private final UsuarioMapper usuarioMapper;
-    private final VentaRepository ventaRepository;
     private final FindIdService findIdService;
     private final ClienteRepository clienteRepository;
     private final UsuarioRepository usuarioRepository;
@@ -96,7 +90,7 @@ public class FacturaServiceImpl implements FacturaService {
 
     @Override
     public List<FacturaDTO> findAllByClientNombre(String nombre) {
-        List<Factura> facturas = facturaRepository.findByNombreClienteIgnoreCase(nombre);
+        List<Factura> facturas = facturaRepository.findAllByNombreClienteIgnoreCase(nombre);
         return facturas.stream()
                 .map(facturaMapper::toDto)
                 .collect(Collectors.toList());
@@ -105,6 +99,14 @@ public class FacturaServiceImpl implements FacturaService {
     @Override
     public List<FacturaDTO> findAllByDay(FacturaDTO facturaDTO) {
         return List.of();
+    }
+
+    @Override
+    public List<FacturaDTO> findAllByUsuarioNombre(String nombre) {
+        List<Factura> facturas = facturaRepository.findAllFacturasByUsuarioNombre(nombre);
+        return facturas.stream()
+                .map(facturaMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     private Float total(FacturaDTO facturaDTO) {

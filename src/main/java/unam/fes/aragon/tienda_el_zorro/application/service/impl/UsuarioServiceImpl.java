@@ -2,11 +2,12 @@ package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import unam.fes.aragon.tienda_el_zorro.application.service.FindIdService;
 import unam.fes.aragon.tienda_el_zorro.application.service.UsuarioService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.UsuarioDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Rol;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Usuario;
-import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.UsuarioMapper;
+import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.UsuarioMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.RolRepository;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.UsuarioRepository;
 
@@ -18,14 +19,15 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UsuarioServiceImpl implements UsuarioService {
 
-    private UsuarioRepository usuarioRepository;
-    private UsuarioMapper usuarioMapper;
-    private RolRepository rolRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final UsuarioMapper usuarioMapper;
+    private final RolRepository rolRepository;
+    private final FindIdService findIdService;
 
     @Override
     public List<UsuarioDTO> findAll() {
         return usuarioRepository.findAll().stream()
-                .map(usuarioMapper::toDto)
+                .map(usuarioMapper::toDTO)
                 .toList();
     }
 
@@ -43,6 +45,12 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setRoles(roles); // Asignar roles recuperados
 
         usuario = usuarioRepository.save(usuario);
-        return usuarioMapper.toDto(usuario);
+        return usuarioMapper.toDTO(usuario);
+    }
+
+    @Override
+    public void deleteUsuarioById(Long id) {
+        findIdService.findIdUsuario(id);
+        usuarioRepository.deleteById(id);
     }
 }

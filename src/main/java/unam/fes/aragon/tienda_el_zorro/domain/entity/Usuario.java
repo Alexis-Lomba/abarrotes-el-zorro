@@ -25,9 +25,6 @@ public class Usuario implements Serializable {
 
     private String password;
 
-    @OneToMany(mappedBy = "usuario")
-    private List<Venta> ventas;
-
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Factura> facturas;
 

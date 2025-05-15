@@ -3,6 +3,7 @@ package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import unam.fes.aragon.tienda_el_zorro.application.service.FindIdService;
 import unam.fes.aragon.tienda_el_zorro.application.service.ProductoService;
 import unam.fes.aragon.tienda_el_zorro.application.service.ProveedorService;
@@ -12,8 +13,6 @@ import unam.fes.aragon.tienda_el_zorro.domain.dto.ProveedorDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Inventario;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Producto;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Proveedor;
-import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.IProductoMapper;
-import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.IProveedorMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.InventarioMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ProductoMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ProveedorMapper;
@@ -22,7 +21,13 @@ import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.ProductoReposi
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.ProveedorRepository;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.validations.ProductoValidation;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -34,7 +39,6 @@ public class ProductoServiceImpl implements ProductoService {
     private final ProveedorMapper proveedorMapper;
     private final ProveedorService proveedorService;
     private final ProductoMapper productoMapper;
-    private IProductoMapper productoMapperInterface;
     private ProductoValidation productoValidation;
     private InventarioMapper inventarioMapper;
 
@@ -73,6 +77,11 @@ public class ProductoServiceImpl implements ProductoService {
         producto.setProveedor(proveedor);
         inventario.setProducto(producto);
         producto.setInventario(inventario);
+        inventario.setCantidadActual(productoDTO.getInventarioDTO().getCantidadActual());
+        inventario.setCantidadInicial(productoDTO.getInventarioDTO().getCantidadInicial());
+        inventario.setMinimoRequerido(productoDTO.getInventarioDTO().getMinimoRequerido());
+
+        inventarioRepository.save(inventario);
 
         producto = productoRepository.save(producto);
 
@@ -81,5 +90,28 @@ public class ProductoServiceImpl implements ProductoService {
         productoDTO.setStatus(BussinessConstants.CREADO_CORRECTAMENTE);
 
         return productoDTO;
+    }
+
+    @Override
+    public void deleteProducto(Long id) {
+        findIdService.findIdProducto(id);
+        productoRepository.deleteById(id);
+    }
+
+    @Override
+    public void uploadImage(Long productoId, MultipartFile file) {
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        try {
+            String nombreArchivo = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path ruta = Paths.get("uploads/productos/" + nombreArchivo); //actualizar a la carpeta donde guardaremos las imagenes
+            Files.createDirectories(ruta.getParent());
+            Files.copy(file.getInputStream(), ruta, StandardCopyOption.REPLACE_EXISTING);
+            producto.setImagenUrl(nombreArchivo);
+            productoRepository.save(producto);
+        } catch (IOException e) {
+            throw new RuntimeException("Error al guardar la imagen", e);
+        }
     }
 } 

@@ -35,4 +35,9 @@ public class FacturaController {
         return null;
     }
 
+    @GetMapping("/user-invoices")
+    public List<FacturaDTO> getAllByUsuario(@RequestParam String nombre){
+        return facturaService.findAllByUsuarioNombre(nombre);
+    }
+
 }

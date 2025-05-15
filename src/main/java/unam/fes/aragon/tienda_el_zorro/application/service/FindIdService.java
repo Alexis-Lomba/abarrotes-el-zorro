@@ -14,6 +14,5 @@ public interface FindIdService {
     Proveedor findIdProveedor(Long id);
     Rol findIdRol(Long id);
     Usuario findIdUsuario(Long id);
-    Venta findIdVenta(Long id);
 
 }
