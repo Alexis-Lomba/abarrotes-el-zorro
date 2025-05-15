@@ -20,7 +20,7 @@ public class ProductoController {
         this.productoService = productoService;
     }
 
-    @PostMapping("/products")
+    @GetMapping("/products")
     public List<ProductoDTO> getAll() {
         return productoService.findAll();
     }

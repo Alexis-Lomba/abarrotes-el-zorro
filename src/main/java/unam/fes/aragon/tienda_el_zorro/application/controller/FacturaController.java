@@ -30,11 +30,6 @@ public class FacturaController {
         return facturaService.findAllByClientNombre(nombre);
     }
 
-    @PostMapping("/products")
-    public List<FacturaDTO> getAllByDay(@RequestBody FacturaDTO facturaDTO) {
-        return null;
-    }
-
     @GetMapping("/user-invoices")
     public List<FacturaDTO> getAllByUsuario(@RequestParam String nombre){
         return facturaService.findAllByUsuarioNombre(nombre);
