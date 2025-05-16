@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProveedorDTO {
-    @JsonIgnore
     private Long id;
     private String nombre;
     private String correo;

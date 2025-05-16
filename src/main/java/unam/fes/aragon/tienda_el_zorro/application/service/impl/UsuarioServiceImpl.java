@@ -1,8 +1,9 @@
 package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import unam.fes.aragon.tienda_el_zorro.application.service.FindIdService;
 import unam.fes.aragon.tienda_el_zorro.application.service.UsuarioService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.UsuarioDTO;
@@ -24,6 +25,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioMapper usuarioMapper;
     private final RolRepository rolRepository;
     private final FindIdService findIdService;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public List<UsuarioDTO> findAll() {
@@ -55,30 +58,19 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.deleteById(id);
     }
 
-    @Transactional
-    public UsuarioDTO updateUsuario(Long id, UsuarioDTO dto) {
-        Usuario usuario =findIdService.findIdUsuario(id);
-
-        usuario.setNombre(dto.getNombre());
-        usuario.setUsername(dto.getUsername());
-
-        if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
-            usuario.setPassword(dto.getPassword());
+    @Override
+    public UsuarioDTO findById(Long id) {
+        Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
+        if (optionalUsuario.isPresent()) {
+            return usuarioMapper.toDTO(optionalUsuario.get());
+        } else {
+            throw new RuntimeException("Usuario no encontrado con ID: " + id);
         }
-
-        if (dto.getRoles() != null) {
-            List<Rol> roles = dto.getRoles().stream()
-                    .map(rolDTO -> {
-                        Rol rol = new Rol();
-                        rol.setId(rolDTO.getId());
-                        rol.setNombre(rolDTO.getNombre());
-                        return rol;
-                    }).collect(Collectors.toList());
-            usuario.setRoles(roles);
-        }
-
-        usuario = usuarioRepository.save(usuario);
-        return usuarioMapper.toDTO(usuario);
     }
 
+    @Override
+    public UsuarioDTO login(String username, String password) {
+        Optional<Usuario> optional = usuarioRepository.findByUsernameAndPassword(username, password);
+        return optional.map(usuario -> modelMapper.map(usuario, UsuarioDTO.class)).orElse(null);
+    }
 }
