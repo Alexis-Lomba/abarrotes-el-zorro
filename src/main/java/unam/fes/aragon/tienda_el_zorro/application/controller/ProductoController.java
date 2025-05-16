@@ -42,4 +42,11 @@ public class ProductoController {
         return ResponseEntity.ok("Imagen subida correctamente");
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ProductoDTO> update(@PathVariable Long id, @RequestBody ProductoDTO productoDTO) {
+        ProductoDTO actualizado = productoService.updateProducto(id, productoDTO);
+        return ResponseEntity.ok(actualizado);
+    }
+
+
 }

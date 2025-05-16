@@ -19,7 +19,7 @@ public class ClienteValidation {
     public Cliente validateCliente(ClienteDTO clienteDTO) {
         log.info("Validando cliente en creación de factura {}", clienteDTO.toString());
 
-        Cliente cliente = clienteRepository.findByEmail(clienteDTO.getCorreo());
+        Cliente cliente = clienteRepository.findByEmail(clienteDTO.getEmail());
 
         if (cliente == null) {
             log.info("Cliente no existe, creando nuevo");

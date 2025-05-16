@@ -2,10 +2,12 @@ package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import unam.fes.aragon.tienda_el_zorro.application.service.ClienteService;
 import unam.fes.aragon.tienda_el_zorro.application.service.FindIdService;
 import unam.fes.aragon.tienda_el_zorro.domain.constants.BussinessConstants;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
+import unam.fes.aragon.tienda_el_zorro.domain.entity.Cliente;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.ClientMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.validations.ValidateEmail;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.ClienteRepository;
@@ -39,7 +41,7 @@ public class ClienteServiceImpl implements ClienteService {
     public ClienteDTO createCliente(ClienteDTO clienteDTO) throws Exception {
         log .info("ServiceImpl : {}", clienteDTO);
 
-        validateEmail.validate(clienteDTO.getCorreo());
+        validateEmail.validate(clienteDTO.getEmail());
 
         clienteRepository.save(clienteMapper.toEntity(clienteDTO));
         clienteDTO.setStatus(BussinessConstants.CREADO_CORRECTAMENTE);
@@ -57,5 +59,19 @@ public class ClienteServiceImpl implements ClienteService {
         findIdService.findIdCliente(id);
         clienteRepository.deleteById(id);
     }
+
+    @Override
+    @Transactional
+    public ClienteDTO updateCliente(Long id, ClienteDTO dto) {
+        Cliente cliente = findIdService.findIdCliente(id);
+
+        cliente.setNombre(dto.getNombre());
+        cliente.setApellido(dto.getApellido());
+        cliente.setEmail(dto.getEmail());
+
+        cliente = clienteRepository.save(cliente);
+        return clienteMapper.toDTO(cliente);
+    }
+
 
 } 

@@ -11,7 +11,7 @@ public class ClientMapper {
         return Cliente.builder()
                 .nombre(clienteDTO.getNombre())
                 .apellido(clienteDTO.getApellido())
-                .email(clienteDTO.getCorreo())
+                .email(clienteDTO.getEmail())
                 .build();
     }
 
@@ -19,7 +19,7 @@ public class ClientMapper {
         return ClienteDTO.builder()
                 .nombre(cliente.getNombre())
                 .apellido(cliente.getApellido())
-                .correo(cliente.getEmail())
+                .email(cliente.getEmail())
                 .build();
     }
 }

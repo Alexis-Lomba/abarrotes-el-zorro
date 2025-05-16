@@ -3,11 +3,13 @@ package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import unam.fes.aragon.tienda_el_zorro.application.service.FindIdService;
 import unam.fes.aragon.tienda_el_zorro.application.service.ProductoService;
 import unam.fes.aragon.tienda_el_zorro.application.service.ProveedorService;
 import unam.fes.aragon.tienda_el_zorro.domain.constants.BussinessConstants;
+import unam.fes.aragon.tienda_el_zorro.domain.dto.InventarioDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ProductoDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ProveedorDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Inventario;
@@ -56,40 +58,25 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public ProductoDTO createProducto(ProductoDTO productoDTO) {
-        log.info("Se busca proveedor para el producto");
-        Proveedor proveedor = proveedorRepository.findByName(findIdService.findIdProveedor(productoDTO.getProveedorId()).getNombre());
-        log.info("REspuesta de Proveedor {}", proveedor);
-        ProveedorDTO proveedorDTO;
+        log.info("Inicia creación de producto");
 
-        if (proveedor == null) {
-            log.info("Se crea proveedor");
-            proveedorDTO =  proveedorService.createProveedor(proveedorMapper.toDto(findIdService.findIdProveedor(productoDTO.getProveedorId())));
-            proveedor = proveedorRepository.findByName(productoMapper.toEntity(productoDTO).getProveedor().getNombre());
-            log.info("Nuevo Proveedor {}", proveedorDTO);
-        }
-
-        log.info("Se valida existencia del producto y proveedor");
-        productoValidation.validate(productoDTO, proveedor.getId());
-        Inventario inventario = inventarioMapper.toEntity(inventarioMapper.toDto(productoMapper.toEntity(productoDTO).getInventario()));
-
+        Proveedor proveedor = findIdService.findIdProveedor(productoDTO.getProveedorId());
 
         Producto producto = productoMapper.toEntity(productoDTO);
         producto.setProveedor(proveedor);
-        inventario.setProducto(producto);
-        producto.setInventario(inventario);
-        inventario.setCantidadActual(productoDTO.getInventarioDTO().getCantidadActual());
-        inventario.setCantidadInicial(productoDTO.getInventarioDTO().getCantidadInicial());
-        inventario.setMinimoRequerido(productoDTO.getInventarioDTO().getMinimoRequerido());
-
-        inventarioRepository.save(inventario);
-
+        producto.setInventario(null);
         producto = productoRepository.save(producto);
 
-        log.info("Se crea producto ");
-        productoDTO = productoMapper.toDto(producto);
-        productoDTO.setStatus(BussinessConstants.CREADO_CORRECTAMENTE);
+        Inventario inventario = inventarioMapper.toEntity(productoDTO.getInventarioDTO());
+        inventario.setProducto(producto);
+        inventario = inventarioRepository.save(inventario);
 
-        return productoDTO;
+        producto.setInventario(inventario);
+        producto = productoRepository.save(producto);
+
+        ProductoDTO resultado = productoMapper.toDto(producto);
+        resultado.setStatus("CREADO_CORRECTAMENTE");
+        return resultado;
     }
 
     @Override
@@ -114,4 +101,33 @@ public class ProductoServiceImpl implements ProductoService {
             throw new RuntimeException("Error al guardar la imagen", e);
         }
     }
+
+    @Override
+    @Transactional
+    public ProductoDTO updateProducto(Long id, ProductoDTO dto) {
+        Producto producto = findIdService.findIdProducto(id);
+
+        producto.setNombre(dto.getNombre());
+        producto.setDescripcion(dto.getDescripcion());
+        producto.setPrecio(dto.getPrecio());
+        producto.setImagenUrl(dto.getImagenUrl());
+
+        if (dto.getProveedorId() != null) {
+            Proveedor proveedor = findIdService.findIdProveedor(dto.getProveedorId());
+            producto.setProveedor(proveedor);
+        }
+
+        if (dto.getInventarioDTO() != null) {
+            Inventario inventario = producto.getInventario();
+            InventarioDTO invDto = dto.getInventarioDTO();
+            inventario.setCantidadActual(invDto.getCantidadActual());
+            inventario.setCantidadInicial(invDto.getCantidadInicial());
+            inventario.setMinimoRequerido(invDto.getMinimoRequerido());
+            inventarioRepository.save(inventario);
+        }
+
+        producto = productoRepository.save(producto);
+        return productoMapper.toDto(producto);
+    }
+
 } 

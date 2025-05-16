@@ -3,6 +3,7 @@ package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import unam.fes.aragon.tienda_el_zorro.application.service.FindIdService;
 import unam.fes.aragon.tienda_el_zorro.application.service.ProveedorService;
 import unam.fes.aragon.tienda_el_zorro.domain.constants.BussinessConstants;
@@ -48,4 +49,17 @@ public class ProveedorServiceImpl implements ProveedorService {
         findIdService.findIdProveedor(id);
         proveedorRepository.deleteById(id);
     }
+
+    @Transactional
+    public ProveedorDTO updateProveedor(Long id, ProveedorDTO dto) {
+        Proveedor proveedor = findIdService.findIdProveedor(id);
+
+        proveedor.setNombre(dto.getNombre());
+        proveedor.setCorreo(dto.getCorreo());
+
+        proveedor = proveedorRepository.save(proveedor);
+
+        return proveedorMapper.toDto(proveedor);
+    }
+
 } 

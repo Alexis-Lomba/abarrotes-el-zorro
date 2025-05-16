@@ -1,6 +1,7 @@
 package unam.fes.aragon.tienda_el_zorro.application.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unam.fes.aragon.tienda_el_zorro.application.service.ProveedorService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ProveedorDTO;
@@ -33,4 +34,11 @@ public class ProveedorController {
     public void delete(@RequestBody Long id){
         proveedorService.deleteProveedor(id);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProveedorDTO> update(@PathVariable Long id, @RequestBody ProveedorDTO proveedorDTO) {
+        ProveedorDTO actualizado = proveedorService.updateProveedor(id, proveedorDTO);
+        return ResponseEntity.ok(actualizado);
+    }
+
 }

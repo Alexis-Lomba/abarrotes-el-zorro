@@ -2,6 +2,7 @@ package unam.fes.aragon.tienda_el_zorro.application.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unam.fes.aragon.tienda_el_zorro.application.service.ClienteService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
@@ -39,4 +40,11 @@ public class ClienteController {
     public void deleteClientById(@RequestParam Long id){
         clienteService.deleteClientById(id);
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ClienteDTO> actualizarCliente(@PathVariable Long id, @RequestBody ClienteDTO clienteDTO) {
+        ClienteDTO actualizado = clienteService.updateCliente(id, clienteDTO);
+        return ResponseEntity.ok(actualizado);
+    }
+
 }

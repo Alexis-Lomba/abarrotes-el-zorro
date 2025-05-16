@@ -14,4 +14,6 @@ public interface ProductoService {
 
     void uploadImage(Long prodcutoId, MultipartFile file);
 
+    ProductoDTO updateProducto(Long id, ProductoDTO productoDTO);
+
 } 
