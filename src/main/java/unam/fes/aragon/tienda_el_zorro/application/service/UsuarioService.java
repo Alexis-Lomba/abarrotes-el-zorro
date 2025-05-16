@@ -12,4 +12,7 @@ public interface UsuarioService {
 
     void deleteUsuarioById(Long id);
 
+    UsuarioDTO findById(Long id);
+
+    UsuarioDTO login(String username, String password);
 }
