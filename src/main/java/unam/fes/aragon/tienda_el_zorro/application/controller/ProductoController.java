@@ -25,6 +25,11 @@ public class ProductoController {
         return productoService.findAll();
     }
 
+    @GetMapping("find-by-name/{nombre}")
+    public List<ProductoDTO> findByName(@PathVariable String nombre){
+        return productoService.findByName(nombre);
+    }
+
     @PostMapping("/create")
     public ProductoDTO create(@RequestBody ProductoDTO request) {
         log.info("Incia creacion de Producto: {}", request);

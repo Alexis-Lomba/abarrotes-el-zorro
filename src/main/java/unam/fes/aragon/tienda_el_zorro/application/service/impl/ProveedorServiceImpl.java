@@ -2,6 +2,7 @@ package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import unam.fes.aragon.tienda_el_zorro.application.service.FindIdService;
@@ -14,6 +15,7 @@ import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.ProveedorRepos
 import unam.fes.aragon.tienda_el_zorro.infraestructure.validations.ProveedorValidator;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,6 +32,15 @@ public class ProveedorServiceImpl implements ProveedorService {
         return proveedorRepository.findAll().stream()
                 .map(proveedorMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    public List<ProveedorDTO> findByName(String nombre ){
+        List<Proveedor> proveedores = proveedorRepository.findByName(nombre);
+        if (proveedores.isEmpty()) return (List<ProveedorDTO>) ResponseEntity.noContent().build();
+        return proveedores.stream()
+                .map(proveedorMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override

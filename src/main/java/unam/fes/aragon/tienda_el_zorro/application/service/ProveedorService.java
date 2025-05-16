@@ -14,4 +14,6 @@ public interface ProveedorService {
     void deleteProveedor(Long id);
 
     ProveedorDTO updateProveedor(Long id, ProveedorDTO proveedorDTO);
+
+    List<ProveedorDTO> findByName(String nombre);
 } 

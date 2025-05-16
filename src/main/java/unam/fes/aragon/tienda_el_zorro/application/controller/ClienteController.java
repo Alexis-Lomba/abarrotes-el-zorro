@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unam.fes.aragon.tienda_el_zorro.application.service.ClienteService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
+import unam.fes.aragon.tienda_el_zorro.domain.dto.ProductoDTO;
 
 import java.util.List;
 
@@ -23,6 +24,11 @@ public class ClienteController {
     @GetMapping("/clients")
     public List<ClienteDTO> getClients(){
         return clienteService.findAll();
+    }
+
+    @GetMapping("find-by-name/{nombre}")
+    public List<ClienteDTO> findByName(@PathVariable String nombre){
+        return clienteService.findByName(nombre);
     }
 
     @PostMapping("/create")

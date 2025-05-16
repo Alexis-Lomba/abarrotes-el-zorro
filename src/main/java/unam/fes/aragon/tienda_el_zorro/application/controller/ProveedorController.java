@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unam.fes.aragon.tienda_el_zorro.application.service.ProveedorService;
+import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ProveedorDTO;
 
 import java.util.List;
@@ -24,6 +25,11 @@ public class ProveedorController {
         return proveedorService.findAll();
     }
 
+    @GetMapping("find-by-name/{nombre}")
+    public List<ProveedorDTO> findByName(@PathVariable String nombre){
+        return proveedorService.findByName(nombre);
+    }
+
     @PostMapping("/create")
     public ProveedorDTO create(@RequestBody ProveedorDTO proveedor) {
         log.info("Incia creacion de Proveedor: {}", proveedor);
@@ -35,7 +41,7 @@ public class ProveedorController {
         proveedorService.deleteProveedor(id);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<ProveedorDTO> update(@PathVariable Long id, @RequestBody ProveedorDTO proveedorDTO) {
         ProveedorDTO actualizado = proveedorService.updateProveedor(id, proveedorDTO);
         return ResponseEntity.ok(actualizado);

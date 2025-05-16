@@ -34,7 +34,7 @@ public class ProveedorValidator {
     }
 
     public Proveedor validateExistence(ProveedorDTO proveedorDTO) {
-        Proveedor proveedor = proveedorRepository.findByName(proveedorDTO.getNombre());
+        Proveedor proveedor = proveedorRepository.findByNameExcato(proveedorDTO.getNombre());
         if (proveedor == null) {
             throw DinError.builder()
                     .error(ErrorNegocio.builder()

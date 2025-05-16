@@ -2,6 +2,7 @@ package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +31,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -129,5 +131,15 @@ public class ProductoServiceImpl implements ProductoService {
         producto = productoRepository.save(producto);
         return productoMapper.toDto(producto);
     }
+
+    @Override
+    public List<ProductoDTO> findByName(String nombre) {
+        List<Producto> productos = productoRepository.findByNombre(nombre);
+        if(productos.isEmpty()) return (List<ProductoDTO>) ResponseEntity.noContent().build();
+        return productos.stream()
+                .map(productoMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 
 } 

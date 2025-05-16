@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unam.fes.aragon.tienda_el_zorro.application.service.UsuarioService;
-import unam.fes.aragon.tienda_el_zorro.domain.dto.LoginRequest;
+import unam.fes.aragon.tienda_el_zorro.domain.dto.LoginRequestDto;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.UsuarioDTO;
 
 import java.util.List;
@@ -41,13 +41,13 @@ public class UsuarioController {
         }
     }
 
-    @DeleteMapping("/delete-id")
-    public void deleteUsuarioById(@RequestParam Long id){
+    @DeleteMapping("/delete-id/{id}")
+    public void deleteUsuarioById(@PathVariable Long id){
         usuarioService.deleteUsuarioById(id);
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<UsuarioDTO> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<UsuarioDTO> login(@RequestBody LoginRequestDto loginRequest) {
         UsuarioDTO usuario = usuarioService.login(loginRequest.getUsername(), loginRequest.getPassword());
         if (usuario != null) {
             return ResponseEntity.ok(usuario);
@@ -55,12 +55,10 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    /*
     @PutMapping("/update/{id}")
     public ResponseEntity<UsuarioDTO> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO) {
-        UsuarioDTO actualizado = usuarioService.updateUsuario(id, usuarioDTO);
+        UsuarioDTO actualizado = usuarioService.updateUsuario(usuarioDTO, id);
         return ResponseEntity.ok(actualizado);
     }
-    */
 
 }

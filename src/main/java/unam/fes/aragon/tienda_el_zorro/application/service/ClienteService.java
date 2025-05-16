@@ -15,4 +15,6 @@ public interface ClienteService {
 
     ClienteDTO updateCliente(Long id, ClienteDTO clienteDTO);
 
+    List<ClienteDTO> findByName(String nombre);
+
 } 

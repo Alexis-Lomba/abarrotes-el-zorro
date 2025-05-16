@@ -16,4 +16,6 @@ public interface ProductoService {
 
     ProductoDTO updateProducto(Long id, ProductoDTO productoDTO);
 
+    List<ProductoDTO> findByName(String nombre);
+
 } 

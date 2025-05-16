@@ -2,13 +2,13 @@ package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import unam.fes.aragon.tienda_el_zorro.application.service.FindIdService;
 import unam.fes.aragon.tienda_el_zorro.application.service.UsuarioService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.UsuarioDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Rol;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Usuario;
+import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.RolMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.mapper.mainclass.UsuarioMapper;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.RolRepository;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.UsuarioRepository;
@@ -25,9 +25,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioMapper usuarioMapper;
     private final RolRepository rolRepository;
     private final FindIdService findIdService;
-    @Autowired
-    private ModelMapper modelMapper;
-
+    private final ModelMapper modelMapper;
+    private final RolMapper rolMapper;
     @Override
     public List<UsuarioDTO> findAll() {
         return usuarioRepository.findAll().stream()
@@ -73,4 +72,27 @@ public class UsuarioServiceImpl implements UsuarioService {
         Optional<Usuario> optional = usuarioRepository.findByUsernameAndPassword(username, password);
         return optional.map(usuario -> modelMapper.map(usuario, UsuarioDTO.class)).orElse(null);
     }
+
+    @Override
+    public UsuarioDTO updateUsuario(UsuarioDTO usuarioDTO, Long id) {
+        Usuario usuario = findIdService.findIdUsuario(id);
+
+        usuario.setNombre(usuarioDTO.getNombre());
+        usuario.setUsername(usuarioDTO.getUsername());
+
+        if (usuarioDTO.getPassword() != null && !usuarioDTO.getPassword().isBlank()) {
+            usuario.setPassword(usuarioDTO.getPassword());
+        }
+
+        if (usuarioDTO.getRoles() != null) {
+            List<Rol> roles = usuarioDTO.getRoles().stream()
+                    .map(rolMapper::toEntity)
+                    .collect(Collectors.toList());
+            usuario.setRoles(roles);
+        }
+
+        usuario = usuarioRepository.save(usuario);
+        return usuarioMapper.toDTO(usuario);
+    }
+
 }

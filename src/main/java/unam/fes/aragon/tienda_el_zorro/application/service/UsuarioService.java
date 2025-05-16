@@ -16,5 +16,7 @@ public interface UsuarioService {
 
     UsuarioDTO login(String username, String password);
 
+    UsuarioDTO updateUsuario(UsuarioDTO usuarioDTO, Long id);
+
 
 }
