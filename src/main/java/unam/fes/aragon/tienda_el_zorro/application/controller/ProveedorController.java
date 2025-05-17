@@ -36,8 +36,8 @@ public class ProveedorController {
         return proveedorService.createProveedor(proveedor);
     }
 
-    @DeleteMapping("/delete")
-    public void delete(@RequestBody Long id){
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable Long id){
         proveedorService.deleteProveedor(id);
     }
 

@@ -1,13 +1,16 @@
 package unam.fes.aragon.tienda_el_zorro.application.controller;
 
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import unam.fes.aragon.tienda_el_zorro.application.service.ExportService;
+import unam.fes.aragon.tienda_el_zorro.application.service.SolicitarProductoService;
+import unam.fes.aragon.tienda_el_zorro.domain.dto.ProductoRequeridoDTO;
+
+import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -15,10 +18,12 @@ import unam.fes.aragon.tienda_el_zorro.application.service.ExportService;
 public class ExportController {
 
     private final ExportService exportService;
+    private final SolicitarProductoService solicitarProductoService;
 
 
-    public ExportController(ExportService exportService) {
+    public ExportController(ExportService exportService, SolicitarProductoService solicitarProductoService) {
         this.exportService = exportService;
+        this.solicitarProductoService = solicitarProductoService;
     }
 
     @PostMapping("enviar-factura/{id}")
@@ -30,5 +35,12 @@ public class ExportController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al enviar factura");
         }
     }
+
+    @PostMapping("/productos/requeridos")
+    public ResponseEntity<Void> enviarProductosRequeridos(@RequestBody List<ProductoRequeridoDTO> productosRequeridos) throws MessagingException, IOException {
+        solicitarProductoService.enviarProductosRequeridosPorProveedor(productosRequeridos);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

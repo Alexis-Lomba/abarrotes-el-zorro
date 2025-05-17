@@ -42,8 +42,8 @@ public class ClienteController {
         clienteService.deleteClienteByNombre(nombre);
     }
 
-    @DeleteMapping("delete-id")
-    public void deleteClientById(@RequestParam Long id){
+    @DeleteMapping("delete-id/{id}")
+    public void deleteClientById(@PathVariable Long id){
         clienteService.deleteClientById(id);
     }
 
