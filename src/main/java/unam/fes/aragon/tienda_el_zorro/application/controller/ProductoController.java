@@ -25,9 +25,9 @@ public class ProductoController {
         return productoService.findAll();
     }
 
-    @GetMapping("find-by-name/{nombre}")
-    public List<ProductoDTO> findByName(@PathVariable String nombre){
-        return productoService.findByName(nombre);
+    @GetMapping("find-by-name/{name}")
+    public List<ProductoDTO> findByName(@PathVariable String name){
+        return productoService.findByName(name);
     }
 
     @PostMapping("/create")
@@ -41,7 +41,7 @@ public class ProductoController {
         productoService.deleteProducto(id);
     }
 
-    @PostMapping("/productos/{id}/imagen")
+    @PostMapping("/products/{id}/image")
     public ResponseEntity<String> subirImagen(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         productoService.uploadImage(id, file);
         return ResponseEntity.ok("Imagen subida correctamente");

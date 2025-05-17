@@ -12,7 +12,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("usuario-service")
+@RequestMapping("user-service")
 public class UsuarioController {
 
     public final UsuarioService usuarioService;
@@ -21,7 +21,7 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @GetMapping("/usuarios")
+    @GetMapping("/users")
     public List<UsuarioDTO> getAll(){
         return usuarioService.findAll();
     }
@@ -31,7 +31,7 @@ public class UsuarioController {
         return usuarioService.createUsuario(usuarioDTO);
     }
 
-    @GetMapping("/usuarios/{id}")
+    @GetMapping("/users/{id}")
     public ResponseEntity<UsuarioDTO> getById(@PathVariable Long id) {
         UsuarioDTO usuario = usuarioService.findById(id);
         if (usuario != null) {

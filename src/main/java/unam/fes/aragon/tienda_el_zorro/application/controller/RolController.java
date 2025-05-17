@@ -9,7 +9,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("rol-service")
+@RequestMapping("role-service")
 public class RolController {
 
     private  final RolService rolService;

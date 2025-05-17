@@ -11,7 +11,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("proveedor-service")
+@RequestMapping("supplier-service")
 public class ProveedorController {
 
     private final ProveedorService proveedorService;
@@ -20,14 +20,14 @@ public class ProveedorController {
         this.proveedorService = proveedorService;
     }
 
-    @GetMapping("/proveedors")
+    @GetMapping("/suppliers")
     public List<ProveedorDTO> getAll() {
         return proveedorService.findAll();
     }
 
-    @GetMapping("find-by-name/{nombre}")
-    public List<ProveedorDTO> findByName(@PathVariable String nombre){
-        return proveedorService.findByName(nombre);
+    @GetMapping("find-by-name/{name}")
+    public List<ProveedorDTO> findByName(@PathVariable String name){
+        return proveedorService.findByName(name);
     }
 
     @PostMapping("/create")

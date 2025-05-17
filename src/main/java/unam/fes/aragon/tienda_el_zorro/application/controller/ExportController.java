@@ -26,7 +26,7 @@ public class ExportController {
         this.solicitarProductoService = solicitarProductoService;
     }
 
-    @PostMapping("enviar-factura/{id}")
+    @PostMapping("send-invoice/{id}")
     public ResponseEntity<String> enviarFactura(@PathVariable Long id){
         try {
             exportService.generarYEnviarPDF(id);
@@ -36,7 +36,7 @@ public class ExportController {
         }
     }
 
-    @PostMapping("/productos/requeridos")
+    @PostMapping("/required-products")
     public ResponseEntity<Void> enviarProductosRequeridos(@RequestBody List<ProductoRequeridoDTO> productosRequeridos) throws MessagingException, IOException {
         solicitarProductoService.enviarProductosRequeridosPorProveedor(productosRequeridos);
         return ResponseEntity.ok().build();

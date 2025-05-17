@@ -1,12 +1,10 @@
 package unam.fes.aragon.tienda_el_zorro.application.controller;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unam.fes.aragon.tienda_el_zorro.application.service.ClienteService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
-import unam.fes.aragon.tienda_el_zorro.domain.dto.ProductoDTO;
 
 import java.util.List;
 
