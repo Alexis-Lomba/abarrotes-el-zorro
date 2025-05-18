@@ -14,5 +14,5 @@ public interface FacturaService {
 
     List<FacturaDTO> findAllByUsuarioNombre(String nombre);
 
-
+    List<FacturaDTO> findAll();
 }

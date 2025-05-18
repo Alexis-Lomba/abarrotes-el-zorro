@@ -8,6 +8,8 @@ import unam.fes.aragon.tienda_el_zorro.domain.entity.Cliente;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
@@ -19,4 +21,5 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     @Query("DELETE FROM Cliente c WHERE c.nombre = :nombre")
     void deleteByNombre(@Param("nombre") String nombre);
 
+    List<Cliente> findByName(String nombre);
 } 

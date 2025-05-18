@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductoDTO {
-    @JsonIgnore
+    //@JsonIgnore
     private Long id;
     private String nombre;
     private String descripcion;

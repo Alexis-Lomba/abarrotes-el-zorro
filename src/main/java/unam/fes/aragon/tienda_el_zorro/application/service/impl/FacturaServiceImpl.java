@@ -109,6 +109,14 @@ public class FacturaServiceImpl implements FacturaService {
                 .collect(Collectors.toList());
     }
 
+    public List<FacturaDTO> findAll() {
+        List<Factura> facturas = facturaRepository.findAll();
+        return facturas.stream()
+                .map(facturaMapper::toDto) // asegúrate que exista este método
+                .collect(Collectors.toList());
+    }
+
+
     private Float total(FacturaDTO facturaDTO) {
         Float total = 0f;
         for (DetalleFacturaDTO detalle : facturaDTO.getDetalles()) {

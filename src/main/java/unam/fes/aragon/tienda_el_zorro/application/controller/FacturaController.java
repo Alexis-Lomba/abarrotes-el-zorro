@@ -18,6 +18,12 @@ public class FacturaController {
 
     private final FacturaService facturaService;
 
+    @GetMapping("/all")
+    public List<FacturaDTO> getAllFacturas() {
+        log.info("Obteniendo todas las facturas");
+        return facturaService.findAll();
+    }
+
     @PostMapping("/create")
     public FacturaDTO create(@RequestBody FacturaDTO request) {
         log.info("Incia creacion de Factura: {}", request);

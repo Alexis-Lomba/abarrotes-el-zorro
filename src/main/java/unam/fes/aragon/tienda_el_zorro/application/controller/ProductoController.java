@@ -31,8 +31,8 @@ public class ProductoController {
         return productoService.createProducto(request);
     }
 
-    @DeleteMapping("/delete")
-    public void delete(@RequestParam Long id){
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable Long id){
         productoService.deleteProducto(id);
     }
 
