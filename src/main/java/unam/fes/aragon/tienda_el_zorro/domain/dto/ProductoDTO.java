@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductoDTO {
-    @JsonIgnore
     private Long id;
     private String nombre;
     private String descripcion;

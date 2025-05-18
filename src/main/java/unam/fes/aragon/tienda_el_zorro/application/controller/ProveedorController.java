@@ -30,6 +30,11 @@ public class ProveedorController {
         return proveedorService.findByName(name);
     }
 
+    @GetMapping("find-by-id/{id}")
+    public ProveedorDTO findById(@PathVariable Long id){
+        return proveedorService.findById(id);
+    }
+
     @PostMapping("/create")
     public ProveedorDTO create(@RequestBody ProveedorDTO proveedor) {
         log.info("Incia creacion de Proveedor: {}", proveedor);

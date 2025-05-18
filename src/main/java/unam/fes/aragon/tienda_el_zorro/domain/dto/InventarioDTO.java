@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InventarioDTO {
-    @JsonIgnore
     private Long id;
     private Integer cantidadActual;
     private Integer cantidadInicial;

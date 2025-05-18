@@ -16,4 +16,6 @@ public interface ProveedorService {
     ProveedorDTO updateProveedor(Long id, ProveedorDTO proveedorDTO);
 
     List<ProveedorDTO> findByName(String nombre);
+
+    ProveedorDTO findById(Long id);
 } 

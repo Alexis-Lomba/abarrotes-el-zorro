@@ -1,5 +1,6 @@
 package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,11 @@ public class ProveedorServiceImpl implements ProveedorService {
         return proveedores.stream()
                 .map(proveedorMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ProveedorDTO findById(Long id) {
+        return proveedorMapper.toDto(findIdService.findIdProveedor(id));
     }
 
     @Override
