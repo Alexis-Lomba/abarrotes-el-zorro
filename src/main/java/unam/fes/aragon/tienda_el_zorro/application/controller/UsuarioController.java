@@ -5,15 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unam.fes.aragon.tienda_el_zorro.application.service.UsuarioService;
-import unam.fes.aragon.tienda_el_zorro.domain.dto.UsuarioDTO;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.LoginRequest;
+import unam.fes.aragon.tienda_el_zorro.domain.dto.UsuarioDTO;
 
 import java.util.List;
 
-
 @Slf4j
 @RestController
-@RequestMapping("usuario-service")
+@RequestMapping("user-service")
 public class UsuarioController {
 
     public final UsuarioService usuarioService;
@@ -22,12 +21,17 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @GetMapping("/usuarios")
+    @GetMapping("/users")
     public List<UsuarioDTO> getAll(){
         return usuarioService.findAll();
     }
 
-    @GetMapping("/usuarios/{id}")
+    @PostMapping("/create")
+    public UsuarioDTO createUsuario(@RequestBody UsuarioDTO usuarioDTO){
+        return usuarioService.createUsuario(usuarioDTO);
+    }
+
+    @GetMapping("/users/{id}")
     public ResponseEntity<UsuarioDTO> getById(@PathVariable Long id) {
         UsuarioDTO usuario = usuarioService.findById(id);
         if (usuario != null) {
@@ -37,11 +41,9 @@ public class UsuarioController {
         }
     }
 
-
-
-    @PostMapping("/create")
-    public UsuarioDTO createUsuario(@RequestBody UsuarioDTO usuarioDTO){
-        return usuarioService.createUsuario(usuarioDTO);
+    @DeleteMapping("/delete-id/{id}")
+    public void deleteUsuarioById(@PathVariable Long id){
+        usuarioService.deleteUsuarioById(id);
     }
 
     @PostMapping("/auth/login")
@@ -53,9 +55,10 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @DeleteMapping("/delete-id")
-    public void deleteUsuarioById(@RequestParam Long id){
-        usuarioService.deleteUsuarioById(id);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<UsuarioDTO> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO) {
+        UsuarioDTO actualizado = usuarioService.updateUsuario(usuarioDTO, id);
+        return ResponseEntity.ok(actualizado);
     }
 
 }

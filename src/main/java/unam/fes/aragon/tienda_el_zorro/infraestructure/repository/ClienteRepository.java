@@ -21,5 +21,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     @Query("DELETE FROM Cliente c WHERE c.nombre = :nombre")
     void deleteByNombre(@Param("nombre") String nombre);
 
-    List<Cliente> findByName(String nombre);
+    @Query("SELECT c FROM Cliente c WHERE LOWER(c.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))")
+    List<Cliente> findByName(@Param("nombre") String nombre);
 } 

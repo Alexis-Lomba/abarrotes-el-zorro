@@ -20,7 +20,7 @@ public class ProveedorValidator {
     private final ProveedorRepository proveedorRepository;
 
     public void validate(Proveedor proveedor) {
-        if (proveedorRepository.findByName(proveedor.getNombre()) != null) {
+        if (proveedorRepository.findByNameExcato(proveedor.getNombre()) != null) {
             throw DinError.builder()
                     .error(ErrorNegocio.builder()
                             .mensaje(BussinessConstants.ERROR_EN_LA_CREACION)
@@ -34,7 +34,7 @@ public class ProveedorValidator {
     }
 
     public Proveedor validateExistence(ProveedorDTO proveedorDTO) {
-        Proveedor proveedor = proveedorRepository.findByName(proveedorDTO.getNombre());
+        Proveedor proveedor = proveedorRepository.findByNameExcato(proveedorDTO.getNombre());
         if (proveedor == null) {
             throw DinError.builder()
                     .error(ErrorNegocio.builder()

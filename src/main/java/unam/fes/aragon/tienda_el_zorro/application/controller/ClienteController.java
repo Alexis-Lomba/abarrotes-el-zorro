@@ -1,7 +1,7 @@
 package unam.fes.aragon.tienda_el_zorro.application.controller;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unam.fes.aragon.tienda_el_zorro.application.service.ClienteService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
@@ -24,6 +24,11 @@ public class ClienteController {
         return clienteService.findAll();
     }
 
+    @GetMapping("find-by-name/{nombre}")
+    public List<ClienteDTO> findByName(@PathVariable String nombre){
+        return clienteService.findByName(nombre);
+    }
+
     @PostMapping("/create")
     public ClienteDTO createClient(@RequestBody ClienteDTO request) throws Exception {
         log.info("Comienza la cración del del Cliente DTO: {}", request);
@@ -35,8 +40,15 @@ public class ClienteController {
         clienteService.deleteClienteByNombre(nombre);
     }
 
-    @DeleteMapping("delete-id")
-    public void deleteClientById(@RequestParam Long id){
+    @DeleteMapping("delete-id/{id}")
+    public void deleteClientById(@PathVariable Long id){
         clienteService.deleteClientById(id);
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ClienteDTO> actualizarCliente(@PathVariable Long id, @RequestBody ClienteDTO clienteDTO) {
+        ClienteDTO actualizado = clienteService.updateCliente(id, clienteDTO);
+        return ResponseEntity.ok(actualizado);
+    }
+
 }

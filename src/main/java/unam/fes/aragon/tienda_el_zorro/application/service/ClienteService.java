@@ -6,11 +6,15 @@ import java.util.List;
 
 public interface ClienteService {
     List<ClienteDTO> findAll();
-    
+
     ClienteDTO createCliente(ClienteDTO clienteDTO) throws Exception;
 
     void deleteClienteByNombre(String nombre);
 
     void deleteClientById(Long id);
+
+    ClienteDTO updateCliente(Long id, ClienteDTO clienteDTO);
+
+    List<ClienteDTO> findByName(String nombre);
 
 } 

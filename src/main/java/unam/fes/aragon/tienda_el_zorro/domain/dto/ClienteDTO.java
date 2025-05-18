@@ -1,6 +1,5 @@
 package unam.fes.aragon.tienda_el_zorro.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +16,7 @@ public class ClienteDTO {
     private Long id;
     private String nombre;
     private String apellido;
-    private String correo;
+    private String email;
     private List<Long> facturasIds;
     private String status;
 } 

@@ -1,6 +1,7 @@
 package unam.fes.aragon.tienda_el_zorro.infraestructure.repository;
 
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import unam.fes.aragon.tienda_el_zorro.domain.entity.Producto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -23,4 +24,8 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     @Query(value = "select * " +
             "from producto pro ", nativeQuery = true)
     List<Producto> findAllProductos();
+
+    @Query("SELECT p FROM Producto p WHERE LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))")
+    List<Producto> findByNombre(@Param("nombre") String nombre);
+
 } 
