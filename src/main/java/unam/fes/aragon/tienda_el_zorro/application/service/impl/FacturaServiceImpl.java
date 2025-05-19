@@ -48,7 +48,6 @@ public class FacturaServiceImpl implements FacturaService {
     @Transactional
     public FacturaDTO createFactura(FacturaDTO facturaDTO) {
         Factura factura = facturaMapper.toEntity(facturaDTO);
-
         log.info("Actualizando inventario...");
 
         List<DetalleFactura> detalles = new ArrayList<>();
@@ -70,15 +69,19 @@ public class FacturaServiceImpl implements FacturaService {
             DetalleFactura detalle = new DetalleFactura();
             detalle.setProducto(producto);
             detalle.setCantidad(detalleDTO.getCantidad());
-            detalle.setPrecioUnitario(producto.getPrecio());
+            detalle.setPrecioUnitario(producto.getPrecio()); // Precio actualizado desde BD
             detalle.setFactura(factura);
 
             detalles.add(detalle);
         }
+
         factura.setFecha(LocalDateTime.now());
         factura.setDetalles(detalles);
 
-        factura.setTotal(total(facturaDTO));
+        double total = detalles.stream()
+                .mapToDouble(d -> d.getCantidad() * d.getPrecioUnitario())
+                .sum();
+        factura.setTotal((float) total);
 
         // Guarda la factura
         factura = facturaRepository.save(factura);
