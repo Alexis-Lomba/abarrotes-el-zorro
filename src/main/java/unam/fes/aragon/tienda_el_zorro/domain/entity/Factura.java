@@ -46,7 +46,4 @@ public class Factura implements Serializable {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-
-// Getters y Setters
-
 }
