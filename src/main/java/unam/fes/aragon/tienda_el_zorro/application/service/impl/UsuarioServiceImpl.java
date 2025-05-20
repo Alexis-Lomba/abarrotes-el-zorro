@@ -2,6 +2,7 @@ package unam.fes.aragon.tienda_el_zorro.application.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import unam.fes.aragon.tienda_el_zorro.application.service.FindIdService;
 import unam.fes.aragon.tienda_el_zorro.application.service.UsuarioService;
@@ -45,7 +46,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .map(Optional::get) // Obtiene el objeto Rol del Optional
                 .collect(Collectors.toList());
 
-        usuario.setRoles(roles); // Asignar roles recuperados
+        usuario.setRoles(roles);
+        usuario.setPassword(new BCryptPasswordEncoder().encode(usuarioDTO.getPassword()));
 
         usuario = usuarioRepository.save(usuario);
         return usuarioMapper.toDTO(usuario);

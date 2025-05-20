@@ -1,5 +1,6 @@
 package unam.fes.aragon.tienda_el_zorro.security.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,23 +14,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
-
+@AllArgsConstructor
+public class CustomUserDetailService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
 
-    public UserDetailsServiceImpl(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario user = usuarioRepository.findByUsername(username);
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(rol -> new SimpleGrantedAuthority(rol.getNombre()))
+        Usuario usuario = usuarioRepository.findByUsername(username);
+
+        List<GrantedAuthority> authorities = usuario.getRoles().stream()
+                .map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.getNombre()))
                 .collect(Collectors.toList());
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+        return new org.springframework.security.core.userdetails.User(
+                usuario.getUsername(),
+                usuario.getPassword(),
+                authorities
+        );
     }
 }
-
