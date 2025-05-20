@@ -41,8 +41,38 @@ public class SecurityConfig {
 
                 // Configura las reglas de autorización
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/audit-service/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/auth/login", "/api/auth/logout").permitAll()
+                        .requestMatchers(
+                                "/client-service/create",
+                                "/client-service/delete**",
+                                "/client-service/delete-id/*",
+                                "/client-service/update/*",
+                                "/product-service/create",
+                                "/product-service/delete**",
+                                "/product-service/products/*/image",
+                                "/product-service/update/*",
+                                "/supplier-service/create",
+                                "/supplier-service/delete/*",
+                                "/supplier-service/update/*",
+                                "/user-service/**"
+                        ).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(
+                                "/auth/login",
+                                "/auth/logout",
+                                "/client-service/clients",
+                                "/client-service/find-by-name/*",
+                                "/audit-service/**",
+                                "/export-service/send-invoice/*",
+                                "/export-service/required-products",
+                                "/invoice-service/create",
+                                "/invoice-service/client-invoices**",
+                                "/invoice-service/user-invoices**",
+                                "/product-service/products",
+                                "/product-service/find-by-name/*",
+                                "/supplier-service/suppliers",
+                                "/supplier-service/find-by-name/*",
+                                "/supplier-service/find-by-id/*",
+                                "/user-service/users"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
 

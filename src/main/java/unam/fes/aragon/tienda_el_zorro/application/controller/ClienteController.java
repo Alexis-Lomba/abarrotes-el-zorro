@@ -2,6 +2,7 @@ package unam.fes.aragon.tienda_el_zorro.application.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import unam.fes.aragon.tienda_el_zorro.application.service.ClienteService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ClienteDTO;
@@ -35,8 +36,8 @@ public class ClienteController {
         return clienteService.createCliente(request);
     }
 
-    @DeleteMapping("/delete")
-    public void deleteClient(@RequestParam String nombre){
+    @DeleteMapping("/delete/nombre/{nombre}")
+    public void deleteClient(@PathVariable String nombre){
         clienteService.deleteClienteByNombre(nombre);
     }
 
