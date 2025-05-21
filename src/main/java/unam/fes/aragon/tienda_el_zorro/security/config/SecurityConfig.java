@@ -54,7 +54,7 @@ public class SecurityConfig {
                                 "/supplier-service/delete/*",
                                 "/supplier-service/update/*",
                                 "/user-service/**"
-                        ).hasAuthority("ROLE_ADMIN")
+                        ).hasRole("ADMIN")
                         .requestMatchers(
                                 "/auth/login",
                                 "/auth/logout",
@@ -75,12 +75,10 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-
-                // Configura el manejo de sesiones
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                         .maximumSessions(1)
-                        .expiredUrl("/api/auth/login")
+                        .expiredUrl("/auth/login")
                 )
 
                 // Configura el servicio de usuario personalizado
@@ -104,7 +102,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200", "https://your-production-domain.com"));
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); // Importante para enviar cookies
