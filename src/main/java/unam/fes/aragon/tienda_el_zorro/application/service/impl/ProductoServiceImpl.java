@@ -99,7 +99,7 @@ public class ProductoServiceImpl implements ProductoService {
             Path ruta = Paths.get("uploads/productos/" + nombreArchivo); //actualizar a la carpeta donde guardaremos las imagenes
             Files.createDirectories(ruta.getParent());
             Files.copy(file.getInputStream(), ruta, StandardCopyOption.REPLACE_EXISTING);
-            producto.setImagenUrl(nombreArchivo);
+            producto.setImagenUrl(String.valueOf(ruta));
             productoRepository.save(producto);
         } catch (IOException e) {
             throw new RuntimeException("Error al guardar la imagen", e);
