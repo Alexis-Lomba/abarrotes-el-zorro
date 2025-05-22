@@ -7,7 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 import unam.fes.aragon.tienda_el_zorro.application.service.ProductoService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.ProductoDTO;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -36,16 +38,24 @@ public class ProductoController {
         return productoService.createProducto(request);
     }
 
-    @DeleteMapping("/delete")
-    public void delete(@RequestParam Long id){
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable Long id){
         productoService.deleteProducto(id);
     }
 
     @PostMapping("/products/{id}/image")
-    public ResponseEntity<String> subirImagen(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Map<String, String>> uploadImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+
         productoService.uploadImage(id, file);
-        return ResponseEntity.ok("Imagen subida correctamente");
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Imagen subida correctamente");
+
+        return ResponseEntity.ok(response); // <-- Esto ahora devuelve JSON
     }
+
 
     @PutMapping("/update/{id}")
     public ResponseEntity<ProductoDTO> update(@PathVariable Long id, @RequestBody ProductoDTO productoDTO) {

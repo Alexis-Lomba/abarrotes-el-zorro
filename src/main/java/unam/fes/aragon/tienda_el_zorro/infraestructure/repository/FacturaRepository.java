@@ -15,7 +15,7 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
     @Query("SELECT f FROM Factura f JOIN f.cliente c WHERE LOWER(c.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))")
     List<Factura> findAllByNombreClienteIgnoreCase(@Param("nombre") String nombre);
 
-    @Query("SELECT f FROM Factura f JOIN f.usuario u WHERE u.nombre = :nombre")
+    @Query("SELECT f FROM Factura f JOIN f.usuario u WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', :nombre, '%'))")
     List<Factura> findAllFacturasByUsuarioNombre(@Param("nombre") String nombre);
 
 

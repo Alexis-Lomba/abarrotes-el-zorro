@@ -24,6 +24,7 @@ import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.ProductoReposi
 import unam.fes.aragon.tienda_el_zorro.infraestructure.repository.ProveedorRepository;
 import unam.fes.aragon.tienda_el_zorro.infraestructure.validations.ProductoValidation;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,8 +41,6 @@ public class ProductoServiceImpl implements ProductoService {
 
     private final InventarioRepository inventarioRepository;
     private ProductoRepository productoRepository;
-    private final ProveedorMapper proveedorMapper;
-    private final ProveedorService proveedorService;
     private final ProductoMapper productoMapper;
     private ProductoValidation productoValidation;
     private InventarioMapper inventarioMapper;
@@ -94,17 +93,36 @@ public class ProductoServiceImpl implements ProductoService {
         Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
+        // Validar que sea una imagen
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new RuntimeException("El archivo no es una imagen válida");
+        }
+
+        // También puedes validar por extensión
+        String extension = file.getOriginalFilename().toLowerCase();
+        if (!(extension.endsWith(".jpg") || extension.endsWith(".jpeg") || extension.endsWith(".png") || extension.endsWith(".gif"))) {
+            throw new RuntimeException("Solo se permiten archivos con extensión JPG, JPEG, PNG o GIF");
+        }
+
         try {
             String nombreArchivo = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path ruta = Paths.get("uploads/productos/" + nombreArchivo); //actualizar a la carpeta donde guardaremos las imagenes
+
+            // Ruta al escritorio
+            String desktopPath = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + "imagenes_productos" + File.separator;
+            Path ruta = Paths.get(desktopPath + nombreArchivo);
+
             Files.createDirectories(ruta.getParent());
             Files.copy(file.getInputStream(), ruta, StandardCopyOption.REPLACE_EXISTING);
-            producto.setImagenUrl(String.valueOf(ruta));
+
+            producto.setImagenUrl("/images/" + nombreArchivo);
             productoRepository.save(producto);
         } catch (IOException e) {
             throw new RuntimeException("Error al guardar la imagen", e);
         }
     }
+
+
 
     @Override
     @Transactional

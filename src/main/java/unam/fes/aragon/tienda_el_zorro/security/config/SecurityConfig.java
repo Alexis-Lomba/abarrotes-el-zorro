@@ -52,12 +52,12 @@ public class SecurityConfig {
                                 "/product-service/update/*",
                                 "/supplier-service/create",
                                 "/supplier-service/delete/*",
-                                "/supplier-service/update/*",
-                                "/user-service/**"
+                                "/supplier-service/update/*"
                         ).hasRole("ADMIN")
                         .requestMatchers(
                                 "/auth/login",
                                 "/auth/logout",
+                                "/auth/user-info",
                                 "/client-service/clients",
                                 "/client-service/find-by-name/*",
                                 "/audit-service/**",
@@ -71,7 +71,9 @@ public class SecurityConfig {
                                 "/supplier-service/suppliers",
                                 "/supplier-service/find-by-name/*",
                                 "/supplier-service/find-by-id/*",
-                                "/user-service/users"
+                                "/user-service/users",
+                                "/user-service/find-by-username/**",
+                                "/user-service/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

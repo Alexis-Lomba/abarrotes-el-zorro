@@ -24,14 +24,14 @@ public class FacturaController {
         return facturaService.createFactura(request);
     }
 
-    @GetMapping("/client-invoices")
-    public List<FacturaDTO> getAllByClient(@RequestParam String nombre) {
+    @GetMapping("/client-invoices/{nombre}")
+    public List<FacturaDTO> getAllByClient(@PathVariable String nombre) {
         log.info("Facturas del cliente: {}", nombre);
         return facturaService.findAllByClientNombre(nombre);
     }
 
-    @GetMapping("/user-invoices")
-    public List<FacturaDTO> getAllByUsuario(@RequestParam String nombre){
+    @GetMapping("/user-invoices/{nombre}")
+    public List<FacturaDTO> getAllByUsuario(@PathVariable String nombre){
         return facturaService.findAllByUsuarioNombre(nombre);
     }
 

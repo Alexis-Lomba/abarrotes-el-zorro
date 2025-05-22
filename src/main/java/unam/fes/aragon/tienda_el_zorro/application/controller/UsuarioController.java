@@ -3,6 +3,7 @@ package unam.fes.aragon.tienda_el_zorro.application.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import unam.fes.aragon.tienda_el_zorro.application.service.UsuarioService;
 import unam.fes.aragon.tienda_el_zorro.domain.dto.LoginRequestDto;
@@ -59,6 +60,11 @@ public class UsuarioController {
     public ResponseEntity<UsuarioDTO> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO) {
         UsuarioDTO actualizado = usuarioService.updateUsuario(usuarioDTO, id);
         return ResponseEntity.ok(actualizado);
+    }
+
+    @GetMapping("find-by-username/{nombre}")
+    public UsuarioDTO findByUsername(@PathVariable String nombre){
+        return  usuarioService.findByUsername(nombre);
     }
 
 }

@@ -18,5 +18,6 @@ public interface UsuarioService {
 
     UsuarioDTO updateUsuario(UsuarioDTO usuarioDTO, Long id);
 
+    UsuarioDTO findByUsername(String nombre);
 
 }

@@ -97,4 +97,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioMapper.toDTO(usuario);
     }
 
+    @Override
+    public UsuarioDTO findByUsername(String nombre) {
+        return usuarioMapper.toDTO(usuarioRepository.findByUsername(nombre));
+    }
+
 }

@@ -5,6 +5,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.util.ByteArrayDataSource;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -28,6 +29,7 @@ import java.util.Map;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class SolicitarProductoServiceImpl implements SolicitarProductoService {
 
     private final ProductoRepository productoRepository;
@@ -52,6 +54,7 @@ public class SolicitarProductoServiceImpl implements SolicitarProductoService {
             ByteArrayInputStream excel = generarExcelProductosRequeridos(proveedorDTO, productos);
 
             enviarCorreoProveedor(proveedor.getCorreo(), excel, "Productos_Requeridos.xlsx");
+            log.info("Correo al que fue enviado:" + proveedor.getCorreo());
         }
     }
 
