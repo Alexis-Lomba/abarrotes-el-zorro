@@ -69,7 +69,8 @@ public class ProductoServiceImpl implements ProductoService {
         producto = productoRepository.save(producto);
 
         Inventario inventario = inventarioMapper.toEntity(productoDTO.getInventarioDTO());
-        inventario.setCantidadInicial(productoDTO.getInventarioDTO().getCantidadActual());
+        inventario.setCantidadInicial(productoDTO.getInventarioDTO().getCantidadInicial());
+        inventario.setCantidadActual(productoDTO.getInventarioDTO().getCantidadInicial());
         inventario.setProducto(producto);
 
         inventario = inventarioRepository.save(inventario);
